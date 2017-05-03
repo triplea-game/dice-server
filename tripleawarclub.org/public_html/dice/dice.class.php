@@ -2,11 +2,6 @@
 class dice {
 	var $domain = "https://dice.tripleawarclub.org";
 
-	var $database = "<DB-NAME>";
-	var $host = "localhost";
-	var $user = "<USERNAME>";
-	var $password = "<PASSWORD>";
-
 	var $dbconn;
 	var $db = null;
 	var $enc = [];
@@ -31,11 +26,15 @@ class dice {
 			return;
 		}
 
-    	$this->dbconn = new mysqli($this->host, $this->user, $this->password, $this->database);
+    	$host = getenv("MARTI_DB_HOST");
+    	$user = getenv("MARTI_DB_USERNAME");
+    	$password = getenv("MARTI_DB_PASSWORD");
+    	$database = getenv("MARTI_DB_NAME");
+    	$this->dbconn = new mysqli($host, $user, $password, $database);
     	if ($this->dbconn->connect_errno > 0) {
     		exit("fatal error: could not connect to database!<br>" . mysqli_connect_error() . "!");
     	}
-    	$this->db = mysqli_select_db($this->dbconn, $this->database);
+    	$this->db = mysqli_select_db($this->dbconn, $database);
     }
 
 	function updateStats($numdice) {
