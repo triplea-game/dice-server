@@ -1,13 +1,13 @@
 <?php
 class dice {
-	var $domain = "https://dice.tripleawarclub.org";
-
+	var $domain;
 	var $dbconn;
 	var $db = null;
 	var $enc = [];
 
 	// constructor
     function __construct() {
+		$this->domain = self::getBaseUri();
 		$this->connectDatabase();
     }
 
@@ -16,6 +16,16 @@ class dice {
 		if(! is_null($this->db)){
 			$this->disconnectDatabase();
 		}
+	}
+
+	/**
+	 * Returns the base URI of the active request.  The returned URI WILL NOT have a trailing slash.
+	 */
+	static function getBaseUri() {
+		$path = $_SERVER['DOCUMENT_URI'];
+		$pathLastSegment = "/" . basename($path);
+		$pathWithoutLastSegment = substr($path, 0, -strlen($pathLastSegment));
+		return $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST'] . $pathWithoutLastSegment;
 	}
 
 	////////////////////////////////
