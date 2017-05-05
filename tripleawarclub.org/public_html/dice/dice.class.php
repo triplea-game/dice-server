@@ -139,6 +139,9 @@ class dice {
 			$keyfile = fopen("$dir/keys/$date.dat", "r");
 		} else {
 			// get current key
+			if (!file_exists("key.dat")) {
+				$this->setEncryptionKey();
+			}
 			$keyfile = fopen("key.dat", "r");
 		}
 
@@ -155,15 +158,20 @@ class dice {
 	}
 
 	function setEncryptionKey() {
-		$old = $this->getEncryptionKey();
-		$enc['key'] = $this->keygen();
-		$enc['date'] = $this->getDate();
+		$shouldWriteKey = true;
+		if (file_exists("key.dat")) {
+			$old = $this->getEncryptionKey();
+			$shouldWriteKey = copy("key.dat", "./keys/" . $old['date'] . ".dat");
+		}
 
-		if(copy("key.dat","./keys/" . $old['date'] . ".dat")) {
+		if ($shouldWriteKey) {
 			$file = fopen("key.dat", "w");
+			$enc['key'] = $this->keygen();
+			$enc['date'] = $this->getDate();
 			$output = serialize($enc);
 			fputs($file, $output);
 			fclose($file);
+			chmod("key.dat", 0600);
 		}
 	}
 
