@@ -1,7 +1,7 @@
 CREATE TABLE `dice_emails` (
   `registered_email` varchar(255) NOT NULL,
   UNIQUE KEY `registered_email` (`registered_email`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) DEFAULT CHARSET=latin1;
 
 CREATE TABLE `dice_table` (
   `request_ID` int(11) NOT NULL AUTO_INCREMENT,
@@ -11,7 +11,7 @@ CREATE TABLE `dice_table` (
   `time_stamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`request_ID`),
   KEY `UUID` (`UUID`)
-) ENGINE=MyISAM AUTO_INCREMENT=57 DEFAULT CHARSET=latin1;
+) AUTO_INCREMENT=57 DEFAULT CHARSET=latin1;
 
 CREATE TABLE `pending_validations` (
   `email` varchar(255) NOT NULL,
@@ -19,4 +19,4 @@ CREATE TABLE `pending_validations` (
   `time_stamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `IP` int(10) unsigned NOT NULL,
   UNIQUE KEY `email` (`email`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) DEFAULT CHARSET=latin1;
