@@ -4,7 +4,7 @@
 # This image MUST NOT be used for production!
 #
 
-FROM stenote/docker-lemp:latest
+FROM stenote/docker-lemp@sha256:9bf317e08b614f7a6097cf1b7a32a49377c872478f59a19d657d71e27e40af3c
 MAINTAINER "tripleabuilderbot@gmail.com"
 
 ENV \
