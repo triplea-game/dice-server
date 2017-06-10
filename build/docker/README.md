@@ -1,6 +1,6 @@
 # Docker
 
-This folder provides Dockerfiles for building various tripleawarclub.org images.
+This folder provides Dockerfiles for building various dice server images.
 
 ## marti-dev.df
 
@@ -34,7 +34,7 @@ Once the container is started, navigate to `http://localhost:3000` from the host
 If you wish to edit the MARTI source code live while the container is running, mount a volume that maps the MARTI source code folder to `/var/www`:
 
 ```
--v <path/to/repo>/tripleawarclub.org/public_html/dice/:/var/www/
+-v <path/to/repo>/dice/:/var/www/
 ```
 
 where `<path/to/repo>` is the path to the root of your Git repository.
@@ -44,10 +44,10 @@ Note that the container will change ownership of files mounted to this volume to
 Users running SELinux on the host may have to append `:Z` to the `-v` flag value above for the context labels to be adjusted such that the container can access those files.  To restore the original labels, use the `chcon` command.  For example:
 
 ```
-$ chcon -R --reference=tripleawarclub.org/public_html/rules tripleawarclub.org/public_html/dice
+$ chcon -R --reference=README.md dice
 ```
 
-will restore the context labels for all files under and including the `dice` folder to their original values (any sibling folder under `public_html` can be used as the reference; `rules` was picked arbitrarily).
+will restore the context labels for all files under and including the `dice` folder to their original values (any sibling entry can be used as the reference; `README.md` was picked arbitrarily).
 
 ### Usage
 

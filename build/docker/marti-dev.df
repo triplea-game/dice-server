@@ -28,4 +28,4 @@ RUN apt-get -y update \
   && printf "fastcgi_param MARTI_DB_NAME $MARTI_DB_NAME;" >> /etc/nginx/fastcgi_params
 
 COPY ["./build/docker/files/root", "/"]
-COPY ["./tripleawarclub.org/public_html/dice", "/var/www"]
+COPY ["./dice", "/var/www"]
