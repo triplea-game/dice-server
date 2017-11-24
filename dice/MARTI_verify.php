@@ -1,24 +1,15 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>MARTI Verifyer</title>
-	</head>
-	<body>
-		<?php
-		include_once('dice.class.php');
+<?php
+include_once('dice.class.php');
 
-		if(!isset($_GET["iv"]) || !isset($_GET["enc"])){
-			exit("error: You used an invalid link!");
-		}
+if(!isset($_GET["iv"]) || !isset($_GET["enc"]))
+	exit("error: You used an invalid link!");
 
-		$iv = $_GET["iv"];
-		$enc = $_GET["enc"];
+$iv = $_GET["iv"];
+$enc = $_GET["enc"];
 
-		$dice = new dice();
+$dice = new dice();
 
-		$outputArray = $dice->decrypt_data(null, $iv, $enc);
+$outputArray = $dice->decrypt_data(null, $iv, $enc);
 
-		echo "Dice were authentic: " . $outputArray['dice'];
-		?>
-	</body>
-</html>
+echo "Dice were authentic: " . $outputArray['dice'];
+?>

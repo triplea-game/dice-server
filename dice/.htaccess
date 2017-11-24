@@ -1,0 +1,3 @@
+<FilesMatch "\.(key|dat)$">
+  deny from all
+</FilesMatch>
