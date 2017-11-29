@@ -1,0 +1,20 @@
+#
+# Dockerfile for building the MARTI web container.
+#
+
+FROM nginx:1.10.3
+MAINTAINER "tripleabuilderbot@gmail.com"
+
+ENV \
+  MARTI_DB_HOST=sql \
+  MARTI_DB_NAME=marti \
+  MARTI_DB_PASSWORD=password \
+  MARTI_DB_USERNAME=marti_dice
+
+RUN printf "fastcgi_param MARTI_DB_HOST $MARTI_DB_HOST;\n" >> /etc/nginx/marti_fastcgi_params \
+  && printf "fastcgi_param MARTI_DB_USERNAME $MARTI_DB_USERNAME;\n" >> /etc/nginx/marti_fastcgi_params \
+  && printf "fastcgi_param MARTI_DB_PASSWORD $MARTI_DB_PASSWORD;\n" >> /etc/nginx/marti_fastcgi_params \
+  && printf "fastcgi_param MARTI_DB_NAME $MARTI_DB_NAME;" >> /etc/nginx/marti_fastcgi_params
+
+COPY ["./build/docker/marti-dev/web-files/root", "/"]
+COPY ["./dice", "/usr/share/nginx/html/dice"]

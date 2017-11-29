@@ -1,0 +1,31 @@
+#!/bin/bash -e
+
+### Verify container started with all required configuration
+
+if [ -z "$MARTI_SMTP_HOST" ]; then
+  echo '[ERROR]: specify the MARTI_SMTP_HOST environment variable (e.g. "smtp.gmail.com")'
+  exit 1
+fi
+if [ -z "$MARTI_SMTP_PORT" ]; then
+  echo '[ERROR]: specify the MARTI_SMTP_PORT environment variable (e.g. "587")'
+  exit 1
+fi
+if [ -z "$MARTI_SMTP_USERNAME" ]; then
+  echo '[ERROR]: specify the MARTI_SMTP_USERNAME environment variable (e.g. "first.last@gmail.com")'
+  exit 1
+fi
+if [ -z "$MARTI_SMTP_PASSWORD" ]; then
+  echo '[ERROR]: specify the MARTI_SMTP_PASSWORD environment variable (e.g. "my_password")'
+  exit 1
+fi
+
+### Add container-specific information to SMTP configuration
+
+echo "hostname=$(hostname -s).localdomain.tld" >> /etc/ssmtp/ssmtp.conf
+echo "mailhub=$MARTI_SMTP_HOST:$MARTI_SMTP_PORT" >> /etc/ssmtp/ssmtp.conf
+echo "AuthUser=$MARTI_SMTP_USERNAME" >> /etc/ssmtp/ssmtp.conf
+echo "AuthPass=$MARTI_SMTP_PASSWORD" >> /etc/ssmtp/ssmtp.conf
+
+### Start PHP
+
+docker-php-entrypoint php-fpm

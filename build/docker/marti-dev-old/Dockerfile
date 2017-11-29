@@ -27,5 +27,5 @@ RUN apt-get -y update \
   && if [ -n "$MARTI_DB_PASSWORD" ]; then printf "fastcgi_param MARTI_DB_PASSWORD $MARTI_DB_PASSWORD;\n" >> /etc/nginx/fastcgi_params; fi \
   && printf "fastcgi_param MARTI_DB_NAME $MARTI_DB_NAME;" >> /etc/nginx/fastcgi_params
 
-COPY ["./build/docker/files/root", "/"]
+COPY ["./build/docker/marti-dev-old/files/root", "/"]
 COPY ["./dice", "/var/www"]
