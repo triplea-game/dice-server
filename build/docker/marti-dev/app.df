@@ -1,0 +1,26 @@
+#
+# Dockerfile for building the MARTI application container.
+#
+
+FROM php:7.0.22-fpm
+MAINTAINER "tripleabuilderbot@gmail.com"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get -y update \
+  && apt-get -y --no-install-recommends install libmcrypt-dev ssmtp \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* \
+  && docker-php-ext-install mcrypt mysqli
+
+COPY ["./build/docker/marti-dev/app-files/root", "/"]
+COPY ["./dice", "/usr/share/nginx/html/dice"]
+
+RUN groupadd ssmtp \
+  && chown :ssmtp /etc/ssmtp/ssmtp.conf \
+  && chown :ssmtp /usr/sbin/ssmtp \
+  && chmod 640 /etc/ssmtp/ssmtp.conf \
+  && chmod g+s /usr/sbin/ssmtp \
+  && chown -R www-data:www-data /usr/share/nginx/html
+
+ENTRYPOINT ["marti-app-entrypoint"]

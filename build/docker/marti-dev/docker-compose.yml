@@ -1,0 +1,28 @@
+version: '3.1'
+
+services:
+  web:
+    build:
+      context: ../../..
+      dockerfile: build/docker/marti-dev/web.df
+    ports:
+      - '4000:80'
+    depends_on:
+      - app
+
+  app:
+    build:
+      context: ../../..
+      dockerfile: build/docker/marti-dev/app.df
+    depends_on:
+      - sql
+    environment:
+      - MARTI_SMTP_HOST=${MARTI_SMTP_HOST}
+      - MARTI_SMTP_PORT=${MARTI_SMTP_PORT}
+      - MARTI_SMTP_USERNAME=${MARTI_SMTP_USERNAME}
+      - MARTI_SMTP_PASSWORD=${MARTI_SMTP_PASSWORD}
+
+  sql:
+    build:
+      context: ../../..
+      dockerfile: build/docker/marti-dev/sql.df

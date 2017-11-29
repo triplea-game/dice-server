@@ -1,17 +1,11 @@
-# Docker
-
-This folder provides Dockerfiles for building various dice server images.
-
-## marti-dev.df
-
-Dockerfile for building a MARTI container that can be used for development/testing.
+This folder provides a Dockerfile for building a MARTI container that can be used for development/testing.
 
 ### Build
 
 Build the image using the following command (run from the root of your Git repository):
 
 ```
-$ docker build --tag triplea/marti:latest -f build/docker/marti-dev.df .
+$ docker build --tag triplea/marti:latest -f build/docker/marti-dev-old/Dockerfile .
 ```
 
 ### Run

@@ -1,0 +1,14 @@
+#
+# Dockerfile for building the MARTI SQL container.
+#
+
+FROM mysql:5.7.20
+MAINTAINER "tripleabuilderbot@gmail.com"
+
+ENV \
+  MYSQL_DATABASE=marti \
+  MYSQL_USER=marti_dice \
+  MYSQL_PASSWORD=password \
+  MYSQL_RANDOM_ROOT_PASSWORD=yes
+
+COPY ["./config/db/*.sql", "/docker-entrypoint-initdb.d/"]
