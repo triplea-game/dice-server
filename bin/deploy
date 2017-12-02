@@ -1,0 +1,38 @@
+#!/bin/bash -e
+#
+# Deploys MARTI from a source folder (typically a local MARTI Git repo) to a
+# destination folder (typically where MARTI is hosted on the web server).
+#
+
+if [[ $# -ne 2 ]]; then
+  echo "usage: $0 <src-folder> <dst-folder>"
+  exit 1
+fi
+
+# Delete current release in destination folder, but skip files/folders
+# generated at runtime.
+find \
+  "$2" \
+  -mindepth 1 \
+  -not -name '*.dat' \
+  -not -name 'keys' \
+  -not -name '.well-known' \
+  -delete
+
+# Copy new release from source folder to destination folder.
+cp -R "$1/." "$2"
+
+# Delete any .gitignore files in the destination folder that may have been
+# copied in the previous step.
+find "$2" -type f -name '.gitignore' -delete
+
+# Change ownership of the new files copied to the destination folder so they
+# are accessible by the web server.  We once again ignore any files/folders
+# generated at runtime to preserve their original permissions.
+find \
+  "$2" \
+  -mindepth 1 \
+  -not -name '*.dat' \
+  -not -name 'keys' \
+  -not -name '.well-known' \
+  -exec chown www-data:www-data {} +
