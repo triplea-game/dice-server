@@ -28,7 +28,7 @@ Once the container is started, navigate to `http://localhost:3000` from the host
 If you wish to edit the MARTI source code live while the container is running, mount a volume that maps the MARTI source code folder to `/var/www`:
 
 ```
--v <path/to/repo>/dice/:/var/www/
+-v <path/to/repo>/src/:/var/www/
 ```
 
 where `<path/to/repo>` is the path to the root of your Git repository.
@@ -38,10 +38,10 @@ Note that the container will change ownership of files mounted to this volume to
 Users running SELinux on the host may have to append `:Z` to the `-v` flag value above for the context labels to be adjusted such that the container can access those files.  To restore the original labels, use the `chcon` command.  For example:
 
 ```
-$ chcon -R --reference=README.md dice
+$ chcon -R --reference=README.md src
 ```
 
-will restore the context labels for all files under and including the `dice` folder to their original values (any sibling entry can be used as the reference; `README.md` was picked arbitrarily).
+will restore the context labels for all files under and including the `src` folder to their original values (any sibling entry can be used as the reference; `README.md` was picked arbitrarily).
 
 ### Usage
 

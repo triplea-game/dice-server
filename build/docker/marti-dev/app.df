@@ -14,7 +14,7 @@ RUN apt-get -y update \
   && docker-php-ext-install mcrypt mysqli
 
 COPY ["./build/docker/marti-dev/app-files/root", "/"]
-COPY ["./dice", "/usr/share/nginx/html/dice"]
+COPY ["./src", "/usr/share/nginx/html/dice"]
 
 RUN groupadd ssmtp \
   && chown :ssmtp /etc/ssmtp/ssmtp.conf \
