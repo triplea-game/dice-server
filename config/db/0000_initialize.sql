@@ -1,5 +1,3 @@
-START TRANSACTION;
-
 CREATE TABLE `dice_emails` (
   `registered_email` varchar(255) NOT NULL,
   UNIQUE KEY `registered_email` (`registered_email`)
@@ -22,5 +20,3 @@ CREATE TABLE `pending_validations` (
   `IP` int(10) unsigned NOT NULL,
   UNIQUE KEY `email` (`email`)
 ) DEFAULT CHARSET=latin1;
-
-COMMIT;
