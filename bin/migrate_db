@@ -1,0 +1,54 @@
+#!/bin/bash -e
+#
+# Runs all or a subset of the migration scripts in a specific folder against a
+# specific database. The process is aborted if any script fails.
+#
+# It is assumed that all migration script file names are of the form
+# "[0-9][0-9][0-9][0-9]_*.sql".
+#
+
+if [[ $# -ne 4 ]]; then
+  echo "usage: $0 <script_dir> <start_step> <db_name> <db_user>"
+  echo
+  echo "  script_dir: The directory that contains the migration scripts."
+  echo "  start_step: A non-negative integer representing the step number of"
+  echo "              the first migration script to run."
+  echo "  db_name:    The name of the database against which the migration"
+  echo "              scripts are run."
+  echo "  db_user:    The name of the database user who will run the scripts."
+  exit 1
+fi
+
+if ! [[ $2 =~ ^[0-9]+$ ]]; then
+  echo "error: start_step must be a non-negative integer"
+  exit 1
+fi
+
+readonly script_dir=$1
+readonly script_dir_length=$((${#script_dir} + 1))
+readonly start_step=$2
+readonly db_name=$3
+readonly db_user=$4
+
+read -p "Enter password for database user '$db_user': " -s db_password
+echo
+readonly db_defaults_file=$(mktemp)
+chmod 600 $db_defaults_file
+cat > $db_defaults_file <<EOF
+[client]
+password=$db_password
+EOF
+
+declare step=0
+for file in $script_dir/[0-9][0-9][0-9][0-9]_*.sql; do
+  echo -n "$file: "
+  step=${file:$script_dir_length:4}
+  if (( $step >= $start_step )); then
+    echo "Running"
+    mysql --defaults-file=$db_defaults_file -u $db_user $db_name < $file
+  else
+    echo "Skipping"
+  fi
+done
+
+rm $db_defaults_file
