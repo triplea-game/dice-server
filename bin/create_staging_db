@@ -1,0 +1,31 @@
+#!/bin/bash -e
+#
+# Creates an empty MARTI database for staging and grants the specified user
+# all privileges in the new database.
+#
+
+if [[ $# -gt 1 ]]; then
+  echo "usage: $0 [db_user]"
+  echo
+  echo "  db_user: The database user who will be granted full privileges to"
+  echo "           the staging database (default: marti_dice@localhost)."
+  exit 1
+fi
+
+readonly db_user=${1:-marti_dice@localhost}
+
+read -p "Enter password for database user 'root': " -s db_password
+echo
+readonly db_defaults_file=$(mktemp)
+chmod 600 $db_defaults_file
+cat > $db_defaults_file <<EOF
+[client]
+password=$db_password
+EOF
+
+mysql --defaults-file=$db_defaults_file -u root <<EOF
+  CREATE DATABASE marti_staging;
+  GRANT ALL ON marti_staging.* TO $db_user;
+EOF
+
+rm $db_defaults_file
