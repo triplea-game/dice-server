@@ -1,0 +1,19 @@
+server {
+  listen 80;
+  listen [::]:80;
+  server_name dice-staging.tripleawarclub.org;
+  root /usr/share/nginx/html/dice-staging.tripleawarclub.org/public_html;
+
+  access_log /usr/share/nginx/html/dice-staging.tripleawarclub.org/logs/access.log;
+  error_log /usr/share/nginx/html/dice-staging.tripleawarclub.org/logs/error.log;
+
+  location ~ \.php$ {
+    include snippets/fastcgi-php.conf;
+    include marti_staging_fastcgi_params;
+    fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+  }
+
+  location ~ \.(key|dat)$ {
+    deny all;
+  }
+}
