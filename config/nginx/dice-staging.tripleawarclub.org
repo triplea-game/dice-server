@@ -4,8 +4,8 @@ server {
   server_name dice-staging.tripleawarclub.org;
   root /usr/share/nginx/html/dice-staging.tripleawarclub.org/public_html;
 
-  access_log /usr/share/nginx/html/dice-staging.tripleawarclub.org/logs/access.log;
-  error_log /usr/share/nginx/html/dice-staging.tripleawarclub.org/logs/error.log;
+  access_log /var/log/nginx/dice-staging.tripleawarclub.org-access.log;
+  error_log /var/log/nginx/dice-staging.tripleawarclub.org-error.log;
 
   index index.php;
 
