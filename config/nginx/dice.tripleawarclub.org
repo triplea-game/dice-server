@@ -1,0 +1,40 @@
+server {
+  listen 80;
+  listen [::]:80;
+  listen 443 ssl http2;
+  listen [::]:443 ssl http2;
+  server_name dice.tripleawarclub.org;
+  root /usr/share/nginx/html/dice.tripleawarclub.org/public_html;
+
+  ssl_certificate /etc/letsencrypt/live/tripleawarclub.org/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/tripleawarclub.org/privkey.pem;
+
+  # Turn on OCSP stapling as recommended at
+  # https://community.letsencrypt.org/t/integration-guide/13123
+  # requires nginx version >= 1.3.7
+  ssl_stapling on;
+  ssl_stapling_verify on;
+  add_header Strict-Transport-Security "max-age=31536000";
+  ssl_ciphers 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
+  ssl_prefer_server_ciphers on;
+  ssl_dhparam /etc/dhparam/dhparams.pem;
+
+  access_log /var/log/nginx/dice.tripleawarclub.org-access.log;
+  error_log /var/log/nginx/dice.tripleawarclub.org-error.log;
+
+  index index.html index.htm index.php;
+
+  location / {
+    try_files $uri $uri/ =404;
+  }
+
+  location ~ \.php$ {
+    include snippets/fastcgi-php.conf;
+    include marti_prod_fastcgi_params;
+    fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+  }
+
+  location ~ \.(key|dat)$ {
+    deny all;
+  }
+}
