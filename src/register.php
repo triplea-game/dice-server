@@ -33,7 +33,9 @@ else {
 	// collecting information for validation
 	$time = time(); // in unix format
 	$validation = md5($email . $time . rand());
-	$IP = ip2long($_SERVER['REMOTE_ADDR']);
+	// ignore IP for now due to ip2long() not being able to handle IPv6 addresses
+	// TODO: remove this column from the database
+	$IP = 0;
 
 	$sql = "SELECT email FROM pending_validations WHERE email=?";
 	$rows = array();
