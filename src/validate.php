@@ -17,19 +17,19 @@
 		$dice = new dice();
 		$rows = [];
 
-    if ( $sth = $dice->dbconn->prepare( $sql )) {
-      $sth->bind_param('ss',$email,$validation);
-      $sth->execute() or trigger_error($mysqli->error);
-      $sth->bind_result($r_email,$r_validation);
-      while($sth->fetch()) {
-      	$rows[] = [$r_email, $r_validation];
-      }
-    } else {
-      echo "A DB error has occured, please contact an admin. (1-";
+		if ( $sth = $dice->dbconn->prepare( $sql )) {
+			$sth->bind_param('ss',$email,$validation);
+			$sth->execute() or trigger_error($mysqli->error);
+			$sth->bind_result($r_email,$r_validation);
+			while($sth->fetch()) {
+				$rows[] = [$r_email, $r_validation];
+			}
+		} else {
+			echo "A DB error has occured, please contact an admin. (1-";
 			var_dump( $dice->dbconn->errno );
 			echo ")";
 			exit;
-    }
+		}
 		if (empty($rows)) {
 			exit("Could not verify the data. Please check the link you have received in your email");
 		}

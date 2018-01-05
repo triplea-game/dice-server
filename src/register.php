@@ -16,7 +16,7 @@
 			<input type="submit" value="register">
 		</form>
 		<?php
-		}	else {
+		} else {
 		// template for handling postbacks
 			$email = filter_input( INPUT_POST, "email", FILTER_SANITIZE_EMAIL );
 			require_once("dice.class.php");
@@ -55,11 +55,11 @@
 				$sth = $dice->dbconn->prepare( $sql );
 				$sth->bind_param('ssss', $email, $validation, $time, $IP );
 				$sth->execute();
-			}	else {
+			} else {
 				$sql = "UPDATE pending_validations SET validation_key=?, time_stamp= FROM_UNIXTIME(?), IP=? WHERE email=?";
 				$sth = $dice->dbconn->prepare( $sql );
-        $sth->bind_param('ssss', $validation, $time, $IP, $email );
-        $sth->execute();
+				$sth->bind_param('ssss', $validation, $time, $IP, $email );
+				$sth->execute();
 			}
 			// sending email
 			$to = $email;
@@ -74,7 +74,7 @@
 
 			if ($mailsend) {
 				echo("<p>You should receive an email in your postbox with a validation link soon.</p>After validating your email you can use the MARTI dice server");
-			}	else {
+			} else {
 			   echo("<p>Email delivery failed...</p>Please try it later again.");
 			}
 		}

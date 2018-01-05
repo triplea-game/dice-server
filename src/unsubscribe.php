@@ -19,8 +19,7 @@
 			<input type="submit" value="unsubscribe">
 		</form>
 		<?php
-		}
-		else {
+		} else {
 		// template for handling postbacks
 			require_once("dice.class.php");
 			$dice = new dice();
@@ -34,7 +33,7 @@
 			  $sth->bind_param('s',$email);
 			  $sth->execute() or trigger_error($mysqli->error);
 			} else {
-			  echo "A DB error has occured, please contact an admin. (2-";
+				echo "A DB error has occured, please contact an admin. (2-";
 				var_dump( $dice->dbconn->errno );
 				echo ")";
 				exit;

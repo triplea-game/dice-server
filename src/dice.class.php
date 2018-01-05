@@ -5,10 +5,10 @@ class dice {
 	var $db = null;
 	var $enc = [];
 
-  function __construct() {
+	function __construct() {
 		$this->domain = self::getBaseUri();
 		$this->connectDatabase();
-  }
+	}
 
 	function __destruct() {
 		if (!is_null($this->db)) {
@@ -29,7 +29,7 @@ class dice {
 	////////////////////////////////
 	//        database            //
 	////////////////////////////////
-  function connectDatabase() {
+	function connectDatabase() {
   	if (!is_null($this->db)) {
   		return;
 		}
@@ -43,7 +43,7 @@ class dice {
   		exit("fatal error: could not connect to database!<br>" . mysqli_connect_error() . "!");
   	}
   	$this->db = mysqli_select_db($this->dbconn, $database);
-  }
+	}
 
 	function updateStats($numdice) {
 		$this->connectDatabase();
@@ -113,9 +113,9 @@ class dice {
 		$result = $sth->execute();
 		return $result;
 	}
-  function disconnectDatabase() {
+	function disconnectDatabase() {
   	mysqli_close($this->dbconn);
-  }
+	}
 
 	////////////////////////////////
 	//        Encryption          //
@@ -167,7 +167,7 @@ class dice {
 		}
 	}
 
-  function keygen() {
+	function keygen() {
 		$tempstring = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		for($length = 1; $length < 24; $length++) {
 			$temp = str_shuffle($tempstring);
@@ -259,7 +259,7 @@ class dice {
 
 		if ($mailsend) {
 			echo "<p>Dice results were sent via email!</p> <br> <a href='{$this->domain}/MARTI_verify.php?date=$date&iv=$iv&enc=$encrypted_data'>click here to verify the roll</a><br>";
-		}	else {
+		} else {
 			echo "<p>Email delivery failed...</p> Dice results were not sent. <br> Please try it later again.";
 			exit("<p>fatal error: email delivery failed!");
 		}
