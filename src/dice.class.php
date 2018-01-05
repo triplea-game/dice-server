@@ -79,7 +79,7 @@ class dice {
 		}
 
 		foreach($emails as $email) {
-			if (!in_array($email, $registered_mails)){
+			if (!in_array($email, $registered_mails)) {
 				throw new exception("fatal error: email $email is not registered. Please register email at {$this->domain}/register.php !");
 			}
 		}
