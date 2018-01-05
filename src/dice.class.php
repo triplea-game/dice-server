@@ -228,15 +228,6 @@ class dice {
 		return implode(",", $dice);
 	}
 
-  /**
-   * check if email adress is in a valid format
-   * @return bool
-	 * feb 27 2016, using php's filter_input, sanitize filters now
-   */
-	static function checkEmail($email) {
-		return true;
-	}
-
 	function getDate() {
 		return date("Y-m");
 	}

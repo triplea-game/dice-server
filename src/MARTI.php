@@ -38,13 +38,6 @@ ini_set('display_errors', '1');
 
 		$dice = new dice();
 
-		//validate emails and exit if email is wrong
-		foreach($output['emails'] as $value) {
-			if(!dice::checkEmail($value)) {
-				exit("fatal error: at least one email is spelled wrong. check: \"$value\" !");
-			}
-		}
-
 		//check if all emails are registered
 		try {
 			$dice->checkIfMailsAreRegistered($output['emails']);

@@ -13,10 +13,6 @@
 		$validation = filter_input( INPUT_GET, "val", FILTER_SANITIZE_STRING );
 		require_once("dice.class.php");
 
-		if(!dice::checkEmail($email)) {
-			exit("Invalid email format! Please enter a valid email address");
-		}
-
 		$sql = "SELECT email AS CNT FROM pending_validations WHERE email=? and validation_key=?";
 		$dice = new dice();
 		$rows = [];

@@ -25,9 +25,6 @@
 			require_once("dice.class.php");
 			$dice = new dice();
 
-			if (!dice::checkEmail($email)){
-				exit("Invalid email format! Please enter a valid email address");
-			}
 			if(!$dice->checkIfMailIsRegistered($email)){
 				exit("This email is not registered, or was never validated.");
 			}
