@@ -5,7 +5,7 @@
 	</head>
 	<body>
 		<?php
-		if(!isset($_GET["email"]) || !isset($_GET["val"])) {
+		if (!isset($_GET["email"]) || !isset($_GET["val"])) {
 			exit("error: You used an invalid link!");
 		}
 
@@ -17,11 +17,11 @@
 		$dice = new dice();
 		$rows = [];
 
-    if( $sth = $dice->dbconn->prepare( $sql ) ){
+    if ( $sth = $dice->dbconn->prepare( $sql )) {
       $sth->bind_param('ss',$email,$validation);
       $sth->execute() or trigger_error($mysqli->error);
       $sth->bind_result($r_email,$r_validation);
-      while($sth->fetch()){
+      while($sth->fetch()) {
       	$rows[] = [$r_email, $r_validation];
       }
     } else {
@@ -30,13 +30,13 @@
 			echo ")";
 			exit;
     }
-		if(empty($rows)){
+		if (empty($rows)) {
 			exit("Could not verify the data. Please check the link you have received in your email");
 		}
 
 		$sql = "INSERT INTO dice_emails (registered_email) VALUES (?)";
 
-		if($sth = $dice->dbconn->prepare( $sql )) {
+		if ($sth = $dice->dbconn->prepare( $sql )) {
 		  $sth->bind_param('s',$email);
 		  $sth->execute() or trigger_error($mysqli->error);
 		} else {
@@ -48,7 +48,7 @@
 
 		$sql = "DELETE FROM pending_validations WHERE email=?";
 
-		if($sth = $dice->dbconn->prepare( $sql )) {
+		if ($sth = $dice->dbconn->prepare( $sql )) {
 		  $sth->bind_param('s',$email);
 		  $sth->execute() or trigger_error($mysqli->error);
 		} else {

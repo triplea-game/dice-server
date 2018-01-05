@@ -5,10 +5,10 @@
 	<body>
 		<?php
 		$email = filter_input( INPUT_POST, "email", FILTER_SANITIZE_EMAIL );
-		if(is_null( $email ) || $email===false){
+		if (is_null( $email ) || $email===false) {
 			$email = filter_input( INPUT_GET, "email", FILTER_SANITIZE_EMAIL );
 		}
-		if(is_null( $email ) || $email===false) {
+		if (is_null( $email ) || $email===false) {
 		// template for first load
 		?>
 		<form method="post" action="unsubscribe.php">
@@ -25,7 +25,7 @@
 			require_once("dice.class.php");
 			$dice = new dice();
 
-			if(!$dice->checkIfMailIsRegistered($email)){
+			if (!$dice->checkIfMailIsRegistered($email)) {
 				exit("This email is not registered, or was never validated.");
 			}
 			$sql = "DELETE FROM dice_emails WHERE registered_email=?";

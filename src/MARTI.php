@@ -21,10 +21,10 @@ ini_set('display_errors', '1');
 		$email2 = $_POST['gm'];
 
 		//check posted data
-		if(!is_numeric($numsides) || !is_numeric($numdice) || empty($output['subject']) || empty($email1)) {
+		if (!is_numeric($numsides) || !is_numeric($numdice) || empty($output['subject']) || empty($email1)) {
 			exit("fatal error: wrong input!");
 		}
-		if(empty($email2)) {
+		if (empty($email2)) {
 			exit("fatal error: no second email found. Please enter an email address into the Cc-field!");
 		}
 		//format multiple emails in one line
@@ -56,7 +56,6 @@ ini_set('display_errors', '1');
 
 		//show dice
 		echo "your dice are: {$output['dice']}<p><p>";
-
 		?>
 	</body>
 </html>

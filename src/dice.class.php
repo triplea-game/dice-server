@@ -11,8 +11,9 @@ class dice {
   }
 
 	function __destruct() {
-		if(! is_null($this->db))
+		if (!is_null($this->db)) {
 			$this->disconnectDatabase();
+		}
 	}
 
 	/**
@@ -29,7 +30,7 @@ class dice {
 	//        database            //
 	////////////////////////////////
   function connectDatabase() {
-  	if(!is_null($this->db)) {
+  	if (!is_null($this->db)) {
   		return;
 		}
 
@@ -69,18 +70,18 @@ class dice {
 		$sql = "SELECT registered_email FROM dice_emails WHERE registered_email IN ($emails_string)";
 		$result = $this->dbconn->query($sql) or exit("fatal error: data connection lost @checkIfMailsAreRegistered!");
 		$registered_mails = mysqli_fetch_array($result);
-		$num_emails = $result->num_rows;
-		if($num_emails == count($emails)) {
+		if ($result->num_rows === count($emails)) {
 			return true;	// all emails are registered
 		}
 
-		if($registered_mails == false){
+		if (!$registered_mails) {
 			throw new exception("fatal error: none of the emails is registered. Please register emails at {$this->domain}/register.php !");
 		}
 
 		foreach($emails as $email) {
-			if(!in_array($email, $registered_mails))
+			if (!in_array($email, $registered_mails)){
 				throw new exception("fatal error: email $email is not registered. Please register email at {$this->domain}/register.php !");
+			}
 		}
 		throw new exception("fatal error: unknown error with email adresses!");
 	}
@@ -93,7 +94,7 @@ class dice {
 		$this->connectDatabase();
 
 		$sql = "SELECT registered_email FROM dice_emails WHERE registered_email = '$email'";
-		$result = $this->dbconn->query($sql) or exit("fatal error: data connection error " . $this->dbconn->error . "!");
+		$result = $this->dbconn->query($sql) or exit("fatal error: data connection error {$this->dbconn->error}!");
 		return $result->num_rows === 1;
 	}
 
@@ -104,10 +105,10 @@ class dice {
 	 */
 	function runQuery($sql) {
 		$this->connectDatabase();
-		return $this->dbconn->query($sql) or exit("fatal error: " . $this->dbconn->error . "!");
+		return $this->dbconn->query($sql) or exit("fatal error: {$this->dbconn->error}!");
 	}
 
-	function runStatement($sth){
+	function runStatement($sth) {
 		$this->connectDatabase();
 		$result = $sth->execute();
 		return $result;
@@ -126,7 +127,7 @@ class dice {
 	 */
 	function getEncryptionKey($date = null) {
 		// get old key
-		if($date) {
+		if ($date) {
 			$dir = dirname(__FILE__);
 			$keyfile = fopen("$dir/keys/$date.dat", "r");
 		} else {
@@ -218,7 +219,6 @@ class dice {
 	////////////////////////////////
 	//       dice and mail        //
 	////////////////////////////////
-
 	function createdice($numdice, $numsides) {
 		$i = 0;
 		while ($i < $numdice) {
@@ -242,15 +242,15 @@ class dice {
 		$message .= "----------------------------------\n";
 		$message .= "This is an automatically created email of the TripleA Ladder. Please don't reply to it. \n\n";
 		$message .= "Verification Info: Follow this link to check if your dice are authentic \n";
-		$message .= $this->domain."/MARTI_verify.php?date=$date&iv=$iv&enc=$encrypted_data \n\n";
+		$message .= "{$this->domain}/MARTI_verify.php?date=$date&iv=$iv&enc=$encrypted_data \n\n";
 		$message .= "*** $date *** \n";
 		$message .= "$iv \n";
 		$message .= "............. \n";
 		$message .= "$encrypted_data \n";
 		$message .= "************* \n\n\n";
  		$message .= "----------------------------------\n";
- 		$message .= "This Email is not SPAM.\nYou receive this email because of your registration at ".$this->domain."\n";
-		$message .= "To unsubscribe from this service go to ".$this->domain."/unsubscribe.php";
+ 		$message .= "This Email is not SPAM.\nYou receive this email because of your registration at {$this->domain}\n";
+		$message .= "To unsubscribe from this service go to {$this->domain}/unsubscribe.php";
 
 		$ehead= "From: MARTI<marti@tripleawarclub.org>";
 		$subj = "$subject";
@@ -258,9 +258,9 @@ class dice {
 		$mailsend= @mail($to,$subj,$message,$ehead);
 
 		if ($mailsend) {
-			echo("<p>Dice results were sent via email!</p> <br> <a href='".$this->domain."/MARTI_verify.php?date=$date&iv=$iv&enc=$encrypted_data'>click here to verify the roll</a><br>");
+			echo "<p>Dice results were sent via email!</p> <br> <a href='{$this->domain}/MARTI_verify.php?date=$date&iv=$iv&enc=$encrypted_data'>click here to verify the roll</a><br>";
 		}	else {
-			echo("<p>Email delivery failed...</p> Dice results were not sent. <br> Please try it later again.");
+			echo "<p>Email delivery failed...</p> Dice results were not sent. <br> Please try it later again.";
 			exit("<p>fatal error: email delivery failed!");
 		}
 	}

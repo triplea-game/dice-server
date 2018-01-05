@@ -5,7 +5,7 @@
 	</head>
 	<body>
 		<?php
-		if(! isset($_POST["email"]) || empty($_POST["email"])) {
+		if (! isset($_POST["email"]) || empty($_POST["email"])) {
 		// template for first load
 		?>
 		<form method="post" action="register.php">
@@ -23,7 +23,7 @@
 			$dice = new dice();
 
 			// check if the email already exists
-			if($dice->checkIfMailIsRegistered($email))
+			if ($dice->checkIfMailIsRegistered($email))
 				exit("This email is already registered");
 
 			// collecting information for validation
@@ -35,11 +35,11 @@
 
 			$sql = "SELECT email FROM pending_validations WHERE email=?";
 			$rows = [];
-			if( $sth = $dice->dbconn->prepare( $sql ) ){
+			if ( $sth = $dice->dbconn->prepare( $sql )) {
 				$sth->bind_param('s',$email);
 				$sth->execute() or trigger_error($mysqli->error);
 				$sth->bind_result($emailColumn);
-				while($sth->fetch()){
+				while($sth->fetch()) {
 					$rows[] = $emailColumn;
 				}
 			} else {
@@ -50,7 +50,7 @@
 			}
 
 			// insert or update pending validation
-			if(empty($rows)) {
+			if (empty($rows)) {
 				$sql = "INSERT INTO pending_validations (email, validation_key, time_stamp, IP) VALUES (?, ?, FROM_UNIXTIME(?), ?)";
 				$sth = $dice->dbconn->prepare( $sql );
 				$sth->bind_param('ssss', $email, $validation, $time, $IP );
