@@ -75,7 +75,7 @@
 			if ($mailsend) {
 				echo("<p>You should receive an email in your postbox with a validation link soon.</p>After validating your email you can use the MARTI dice server");
 			} else {
-			   echo("<p>Email delivery failed...</p>Please try it later again.");
+				echo("<p>Email delivery failed...</p>Please try it later again.");
 			}
 		}
 		?>

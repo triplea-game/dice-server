@@ -37,10 +37,10 @@
 		$sql = "INSERT INTO dice_emails (registered_email) VALUES (?)";
 
 		if ($sth = $dice->dbconn->prepare( $sql )) {
-		  $sth->bind_param('s',$email);
-		  $sth->execute() or trigger_error($mysqli->error);
+			$sth->bind_param('s',$email);
+			$sth->execute() or trigger_error($mysqli->error);
 		} else {
-		  echo "A DB error has occured, please contact an admin. (2-";
+			echo "A DB error has occured, please contact an admin. (2-";
 			var_dump( $dice->dbconn->errno );
 			echo ")";
 			exit;
@@ -49,10 +49,10 @@
 		$sql = "DELETE FROM pending_validations WHERE email=?";
 
 		if ($sth = $dice->dbconn->prepare( $sql )) {
-		  $sth->bind_param('s',$email);
-		  $sth->execute() or trigger_error($mysqli->error);
+			$sth->bind_param('s',$email);
+			$sth->execute() or trigger_error($mysqli->error);
 		} else {
-		  echo "A DB error has occured, please contact an admin. (3-";
+			echo "A DB error has occured, please contact an admin. (3-";
 			var_dump( $dice->dbconn->errno );
 			echo ")";
 			exit;

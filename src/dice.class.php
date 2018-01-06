@@ -30,19 +30,19 @@ class dice {
 	//        database            //
 	////////////////////////////////
 	function connectDatabase() {
-  	if (!is_null($this->db)) {
-  		return;
+		if (!is_null($this->db)) {
+			return;
 		}
 
-  	$host = getenv("MARTI_DB_HOST");
-  	$user = getenv("MARTI_DB_USERNAME");
-  	$password = getenv("MARTI_DB_PASSWORD");
-  	$database = getenv("MARTI_DB_NAME");
-  	$this->dbconn = new mysqli($host, $user, $password, $database);
-  	if ($this->dbconn->connect_errno > 0) {
-  		exit("fatal error: could not connect to database!<br>" . mysqli_connect_error() . "!");
-  	}
-  	$this->db = mysqli_select_db($this->dbconn, $database);
+		$host = getenv("MARTI_DB_HOST");
+		$user = getenv("MARTI_DB_USERNAME");
+		$password = getenv("MARTI_DB_PASSWORD");
+		$database = getenv("MARTI_DB_NAME");
+		$this->dbconn = new mysqli($host, $user, $password, $database);
+		if ($this->dbconn->connect_errno > 0) {
+			exit("fatal error: could not connect to database!<br>" . mysqli_connect_error() . "!");
+		}
+		$this->db = mysqli_select_db($this->dbconn, $database);
 	}
 
 	function updateStats($numdice) {
@@ -114,7 +114,7 @@ class dice {
 		return $result;
 	}
 	function disconnectDatabase() {
-  	mysqli_close($this->dbconn);
+		mysqli_close($this->dbconn);
 	}
 
 	////////////////////////////////
@@ -182,11 +182,11 @@ class dice {
 		$string = serialize($input);
 
 		$td = mcrypt_module_open('rijndael-256', '', 'cfb', '');
-  	$out['iv'] = mcrypt_create_iv (mcrypt_enc_get_iv_size($td), MCRYPT_RAND);
-  	mcrypt_generic_init($td, $this->enc['key'], $out['iv']);
-  	$encrypted_data = mcrypt_generic($td, $string);
-  	mcrypt_generic_deinit($td);
-  	mcrypt_module_close($td);
+		$out['iv'] = mcrypt_create_iv (mcrypt_enc_get_iv_size($td), MCRYPT_RAND);
+		mcrypt_generic_init($td, $this->enc['key'], $out['iv']);
+		$encrypted_data = mcrypt_generic($td, $string);
+		mcrypt_generic_deinit($td);
+		mcrypt_module_close($td);
 
 		$out['data'] = rawurlencode(base64_encode($encrypted_data));
 		$out['iv'] = rawurlencode(base64_encode($out['iv']));
@@ -202,10 +202,10 @@ class dice {
 			: $this->getEncryptionKey();
 
 		$td = mcrypt_module_open('rijndael-256', '', 'cfb', '');
-  	mcrypt_generic_init($td, $encrypt_key['key'], $iv);
-  	$decrypted_data = mdecrypt_generic($td, $encrypted_data);
-  	mcrypt_generic_deinit($td);
-  	mcrypt_module_close($td);
+		mcrypt_generic_init($td, $encrypt_key['key'], $iv);
+		$decrypted_data = mdecrypt_generic($td, $encrypted_data);
+		mcrypt_generic_deinit($td);
+		mcrypt_module_close($td);
 
 		return unserialize($decrypted_data);
 	}
@@ -233,7 +233,7 @@ class dice {
 	}
 
 	function sendEmail($emails, $subject, $dice, $iv, $encrypted_data) {
-		$to  = implode (", ", $emails);
+		$to = implode (", ", $emails);
 		$date = $this->getDate();
 
 		// send email to member
@@ -248,8 +248,8 @@ class dice {
 		$message .= "............. \n";
 		$message .= "$encrypted_data \n";
 		$message .= "************* \n\n\n";
- 		$message .= "----------------------------------\n";
- 		$message .= "This Email is not SPAM.\nYou receive this email because of your registration at {$this->domain}\n";
+		$message .= "----------------------------------\n";
+		$message .= "This Email is not SPAM.\nYou receive this email because of your registration at {$this->domain}\n";
 		$message .= "To unsubscribe from this service go to {$this->domain}/unsubscribe.php";
 
 		$ehead= "From: MARTI<marti@tripleawarclub.org>";
