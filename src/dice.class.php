@@ -46,14 +46,14 @@ class dice {
 	 * Checks if all receiving email adresses are registered
 	 * @returns bool
 	 */
-	function checkIfMailsAreRegistered(array $emails) {
+	function requireMailsAreRegistered(array $emails) {
 		$this->connectDatabase();
 		$emails_string = "'" . implode("', '", $emails) . "'";
 		$sql = "SELECT registered_email FROM dice_emails WHERE registered_email IN ($emails_string)";
-		$result = $this->dbconn->query($sql) or exit("fatal error: data connection lost @checkIfMailsAreRegistered!");
+		$result = $this->dbconn->query($sql) or exit("fatal error: data connection lost @requireMailsAreRegistered!");
 		$registered_mails = mysqli_fetch_array($result);
 		if ($result->num_rows === count($emails)) {
-			return true;	// all emails are registered
+			return;	// all emails are registered
 		}
 
 		if (!$registered_mails) {

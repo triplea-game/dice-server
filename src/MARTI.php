@@ -38,7 +38,7 @@ ini_set('display_errors', '1');
 
 		//check if all emails are registered
 		try {
-			$dice->checkIfMailsAreRegistered($output['emails']);
+			$dice->requireMailsAreRegistered($output['emails']);
 		} catch (exception $e) {
 			exit($e->getMessage());
 		}
