@@ -1,8 +1,7 @@
 <?php
 class dice {
 	var $domain;
-	var $dbconn;
-	var $db = null;
+	var $dbconn = null;
 	var $enc = [];
 
 	function __construct() {
@@ -11,8 +10,8 @@ class dice {
 	}
 
 	function __destruct() {
-		if (!is_null($this->db)) {
-			$this->disconnectDatabase();
+		if (!is_null($this->dbconn)) {
+			$this->dbconn->close();
 		}
 	}
 
@@ -27,7 +26,7 @@ class dice {
 	}
 
 	function connectDatabase() {
-		if (!is_null($this->db)) {
+		if (!is_null($this->dbconn)) {
 			return;
 		}
 
@@ -37,9 +36,8 @@ class dice {
 		$database = getenv("MARTI_DB_NAME");
 		$this->dbconn = new mysqli($host, $user, $password, $database);
 		if ($this->dbconn->connect_errno > 0) {
-			exit("fatal error: could not connect to database!<br>" . mysqli_connect_error() . "!");
+			exit("fatal error: could not connect to database!<br>" . $this->dbconn->connect_error . "!");
 		}
-		$this->db = mysqli_select_db($this->dbconn, $database);
 	}
 
 	/**
@@ -51,7 +49,7 @@ class dice {
 		$emails_string = "'" . implode("', '", $emails) . "'";
 		$sql = "SELECT registered_email FROM dice_emails WHERE registered_email IN ($emails_string)";
 		$result = $this->dbconn->query($sql) or exit("fatal error: data connection lost @requireMailsAreRegistered!");
-		$registered_mails = mysqli_fetch_array($result);
+		$registered_mails = $result->fetch_array();
 		if ($result->num_rows === count($emails)) {
 			return;	// all emails are registered
 		}
