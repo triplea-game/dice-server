@@ -30,8 +30,8 @@
 			$sql = "DELETE FROM dice_emails WHERE registered_email=?";
 
 			if ($sth = $dice->dbconn->prepare( $sql )) {
-			  $sth->bind_param('s',$email);
-			  $sth->execute() or trigger_error($mysqli->error);
+				$sth->bind_param('s',$email);
+				$sth->execute() or trigger_error($mysqli->error);
 			} else {
 				echo "A DB error has occured, please contact an admin. (2-";
 				var_dump( $dice->dbconn->errno );
