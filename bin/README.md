@@ -50,5 +50,5 @@ This folder contains scripts for performing various tasks related to the MARTI d
     $ sudo -u www-data ./bin/deploy ./src/ /usr/share/nginx/html/dice-staging.tripleawarclub.org/public_html/
     ```
 1. Smoke test the application as needed.
-    * Load home page at http://dice-staging.tripleawarclub.org/ .
+    * Load home page at https://dice-staging.tripleawarclub.org/ .
     * Use the TripleA client to send a test email.
