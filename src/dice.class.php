@@ -3,18 +3,17 @@ class dice {
 	var $domain;
 	var $dbconn;
 	var $db = null;
-	var $enc = array();
+	var $enc = [];
 
-	// constructor
-    function __construct() {
+	function __construct() {
 		$this->domain = self::getBaseUri();
-	$this->connectDatabase();
-    }
+		$this->connectDatabase();
+	}
 
-	// destructor
 	function __destruct() {
-		if(! is_null($this->db))
+		if (!is_null($this->db)) {
 			$this->disconnectDatabase();
+		}
 	}
 
 	/**
@@ -27,30 +26,30 @@ class dice {
 		return $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST'] . $pathWithoutLastSegment;
 	}
 
-////////////////////////////////
-//        database            //
-////////////////////////////////
-    function connectDatabase() {
-    	if(! is_null($this->db))
-    		return;
+	////////////////////////////////
+	//        database            //
+	////////////////////////////////
+	function connectDatabase() {
+  	if (!is_null($this->db)) {
+  		return;
+		}
 
-    	$host = getenv("MARTI_DB_HOST");
-    	$user = getenv("MARTI_DB_USERNAME");
-    	$password = getenv("MARTI_DB_PASSWORD");
-    	$database = getenv("MARTI_DB_NAME");
-    	$this->dbconn = new mysqli($host, $user, $password, $database);
-    	if ($this->dbconn->connect_errno > 0) {
-    		exit("fatal error: could not connect to database!<br>" . mysqli_connect_error() . "!");
-    	}
-    	$this->db = mysqli_select_db($this->dbconn, $database);
-    }
+  	$host = getenv("MARTI_DB_HOST");
+  	$user = getenv("MARTI_DB_USERNAME");
+  	$password = getenv("MARTI_DB_PASSWORD");
+  	$database = getenv("MARTI_DB_NAME");
+  	$this->dbconn = new mysqli($host, $user, $password, $database);
+  	if ($this->dbconn->connect_errno > 0) {
+  		exit("fatal error: could not connect to database!<br>" . mysqli_connect_error() . "!");
+  	}
+  	$this->db = mysqli_select_db($this->dbconn, $database);
+	}
 
 	function updateStats($numdice) {
 		$this->connectDatabase();
 
 		$sql = "UPDATE stats SET requests=requests+1, dice_rolled=dice_rolled+$numdice";
 		$result = $this->dbconn->query($sql) or exit("fatal error: data connection lost @updateStats!");
-
 	}
 
 	function getStats() {
@@ -58,12 +57,7 @@ class dice {
 
 		$sql = "SELECT * FROM stats";
 		$result = $this->dbconn->query($sql) or exit("fatal error: data connection lost @getStats!");
-		$stats = mysqli_fetch_array($result);
-
-
-	//	print_r($stats);
-
-		return $stats;
+		return mysqli_fetch_array($result);
 	}
 
 	/**
@@ -76,19 +70,20 @@ class dice {
 		$sql = "SELECT registered_email FROM dice_emails WHERE registered_email IN ($emails_string)";
 		$result = $this->dbconn->query($sql) or exit("fatal error: data connection lost @checkIfMailsAreRegistered!");
 		$registered_mails = mysqli_fetch_array($result);
-		$num_emails = $result->num_rows;
-		if($num_emails == count($emails))
+		if ($result->num_rows === count($emails)) {
 			return true;	// all emails are registered
+		}
 
-		if($registered_mails == false)
-			throw new exception("fatal error: none of the emails is registered. Please register emails at ".$this->domain."/register.php !");
+		if (!$registered_mails) {
+			throw new exception("fatal error: none of the emails is registered. Please register emails at {$this->domain}/register.php !");
+		}
 
 		foreach($emails as $email) {
-			if(! in_array($email, $registered_mails))
-				throw new exception("fatal error: email $email is not registered. Please register email at ".$this->domain."/register.php !");
+			if (!in_array($email, $registered_mails)) {
+				throw new exception("fatal error: email $email is not registered. Please register email at {$this->domain}/register.php !");
+			}
 		}
 		throw new exception("fatal error: unknown error with email adresses!");
-		return false;
 	}
 
 	/**
@@ -99,13 +94,8 @@ class dice {
 		$this->connectDatabase();
 
 		$sql = "SELECT registered_email FROM dice_emails WHERE registered_email = '$email'";
-		$result = $this->dbconn->query($sql) or exit("fatal error: data connection error " . $this->dbconn->error . "!");
-		$num_emails = $result->num_rows;
-
-		if($num_emails == 1)
-			return true;
-
-		return false;
+		$result = $this->dbconn->query($sql) or exit("fatal error: data connection error {$this->dbconn->error}!");
+		return $result->num_rows === 1;
 	}
 
 	/**
@@ -115,35 +105,29 @@ class dice {
 	 */
 	function runQuery($sql) {
 		$this->connectDatabase();
-
-		$result = $this->dbconn->query($sql) or exit("fatal error: " . $this->dbconn->error . "!");
-		return $result;
+		return $this->dbconn->query($sql) or exit("fatal error: {$this->dbconn->error}!");
 	}
 
-	function runStatement($sth){
+	function runStatement($sth) {
 		$this->connectDatabase();
 		$result = $sth->execute();
 		return $result;
 	}
-    function disconnectDatabase() {
-    	mysqli_close($this->dbconn);
-    }
+	function disconnectDatabase() {
+  	mysqli_close($this->dbconn);
+	}
 
-
-
-
-////////////////////////////////
-//        Encryption          //
-////////////////////////////////
+	////////////////////////////////
+	//        Encryption          //
+	////////////////////////////////
 
 	/**
 	 * returns the date and key
 	 * if no date is specified the latest key in key.dat will be returned
 	 */
 	function getEncryptionKey($date = null) {
-
 		// get old key
-		if($date) {
+		if ($date) {
 			$dir = dirname(__FILE__);
 			$keyfile = fopen("$dir/keys/$date.dat", "r");
 		} else {
@@ -154,18 +138,13 @@ class dice {
 			$keyfile = fopen("key.dat", "r");
 		}
 
-
 		if ($keyfile) {
 			$data = fread($keyfile, 8192);
 
 			$this->enc = unserialize($data);
 			fclose($keyfile);
-		//	echo "<br>unserialized data:" . $this->enc . "<br>";
-		//	print_r($this->enc);
-
 			return $this->enc;
-		}
-		else {
+		} else {
 			exit("fatal error: Wrong date!");
 		}
 	}
@@ -188,7 +167,7 @@ class dice {
 		}
 	}
 
-    function keygen() {
+	function keygen() {
 		$tempstring = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		for($length = 1; $length < 24; $length++) {
 			$temp = str_shuffle($tempstring);
@@ -203,16 +182,14 @@ class dice {
 		$string = serialize($input);
 
 		$td = mcrypt_module_open('rijndael-256', '', 'cfb', '');
-    	$out['iv'] = mcrypt_create_iv (mcrypt_enc_get_iv_size($td), MCRYPT_RAND);
-    	mcrypt_generic_init($td, $this->enc['key'], $out['iv']);
-    	$encrypted_data = mcrypt_generic($td, $string);
-    	mcrypt_generic_deinit($td);
-    	mcrypt_module_close($td);
+  	$out['iv'] = mcrypt_create_iv (mcrypt_enc_get_iv_size($td), MCRYPT_RAND);
+  	mcrypt_generic_init($td, $this->enc['key'], $out['iv']);
+  	$encrypted_data = mcrypt_generic($td, $string);
+  	mcrypt_generic_deinit($td);
+  	mcrypt_module_close($td);
 
 		$out['data'] = rawurlencode(base64_encode($encrypted_data));
 		$out['iv'] = rawurlencode(base64_encode($out['iv']));
-//		echo "<br>encrypted data:". $out['data'] . ", iv:" . $out['iv'] ."<br>";
-
 		return $out;
 	}
 
@@ -220,91 +197,42 @@ class dice {
 		$iv = base64_decode(rawurldecode($iv));
 		$encrypted_data = base64_decode(rawurldecode($encrypted_data));
 
-		if ($date != $this->getDate()) {
-			$encrypt_key = $this->getEncryptionKey($date);
-		}
-		else {
-			$encrypt_key = $this->getEncryptionKey();
-		}
+		$encrypt_key = ($date != $this->getDate())
+			? $this->getEncryptionKey($date)
+			: $this->getEncryptionKey();
 
 		$td = mcrypt_module_open('rijndael-256', '', 'cfb', '');
-    	mcrypt_generic_init($td, $encrypt_key['key'], $iv);
-    	$decrypted_data = mdecrypt_generic($td, $encrypted_data);
-    	mcrypt_generic_deinit($td);
-    	mcrypt_module_close($td);
+  	mcrypt_generic_init($td, $encrypt_key['key'], $iv);
+  	$decrypted_data = mdecrypt_generic($td, $encrypted_data);
+  	mcrypt_generic_deinit($td);
+  	mcrypt_module_close($td);
 
-//		echo "<br>decrypted data: $decrypted_data <br>";
-		$output = unserialize($decrypted_data);
-//		print_r($output);
-
-
-		return $output;
+		return unserialize($decrypted_data);
 	}
 
 	function checkNewKeyNeeded() {
 		$now = $this->getDate();
 		$current_key = $this->getEncryptionKey();
-		if ($now != $current_key['date']) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		return $now != $current_key['date'];
 	}
 
-
-
-////////////////////////////////
-//       dice and mail        //
-////////////////////////////////
-
+	////////////////////////////////
+	//       dice and mail        //
+	////////////////////////////////
 	function createdice($numdice, $numsides) {
 		$i = 0;
-		while ($i <= $numdice-1) {
+		while ($i < $numdice) {
 			$dice[$i] = mt_rand(1,$numsides);
 			$i++;
 		}
-		$dicestring = implode(",", $dice);
-
-		return $dicestring;
+		return implode(",", $dice);
 	}
-
-    /**
-     * check if email adress is in a valid format
-     * @return bool
-* feb 27 2016, using php's filter_input, sanitize filters now
-     */
-	static function checkEmail($email) {
-	return true;
-//		if (!ereg("^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+\.([a-zA-Z0-9-]{2,3})$",$email)) {
-		$regex = "/^[_a-zA-Z0-9]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]{2,}(\.[_a-zA-Z0-9-]+)?\.([a-zA-Z0-9-]{2,3})$/";
-			/*	legal examples: name@domain.com, my.name@domain.net, name@subdomain.domain.de, my.name@subdomain.domain.org
-			 *
-			 * 	/^[_a-zA-Z0-9-]+		begins with letter or number
-			 * 	(\.[_a-zA-Z0-9-]+)*		none or multiple letters or numbers which begins with a .
-			 * 	@						@
-			 * 	[a-zA-Z0-9-]{2,}		at least two more letters or numbers
-			 * 	(\.[_a-zA-Z0-9-]+)?		optional: at least one more char or num which begins with a .
-			 * 	\.						.
-			 * 	([a-zA-Z0-9-]{2,3})$/	2-3 chars or numbers and end of expression
-			 */
-		if (!preg_match($regex,$email)) {
-			echo "fatal error: email $email has wrong format!";
-			return false;
-		}
-
-		//echo "email $email is ok<br>";
-		return true;
-	}
-
-
 
 	function getDate() {
 		return date("Y-m");
 	}
 
 	function sendEmail($emails, $subject, $dice, $iv, $encrypted_data) {
-
 		$to  = implode (", ", $emails);
 		$date = $this->getDate();
 
@@ -314,39 +242,27 @@ class dice {
 		$message .= "----------------------------------\n";
 		$message .= "This is an automatically created email of the TripleA Ladder. Please don't reply to it. \n\n";
 		$message .= "Verification Info: Follow this link to check if your dice are authentic \n";
-		$message .= $this->domain."/MARTI_verify.php?date=$date&iv=$iv&enc=$encrypted_data \n\n";
+		$message .= "{$this->domain}/MARTI_verify.php?date=$date&iv=$iv&enc=$encrypted_data \n\n";
 		$message .= "*** $date *** \n";
 		$message .= "$iv \n";
 		$message .= "............. \n";
 		$message .= "$encrypted_data \n";
 		$message .= "************* \n\n\n";
  		$message .= "----------------------------------\n";
- 		$message .= "This Email is not SPAM.\nYou receive this email because of your registration at ".$this->domain."\n";
-		$message .= "To unsubscribe from this service go to ".$this->domain."/unsubscribe.php";
+ 		$message .= "This Email is not SPAM.\nYou receive this email because of your registration at {$this->domain}\n";
+		$message .= "To unsubscribe from this service go to {$this->domain}/unsubscribe.php";
 
 		$ehead= "From: MARTI<marti@tripleawarclub.org>";
 		$subj = "$subject";
 
 		$mailsend= @mail($to,$subj,$message,$ehead);
 
-    /*$fd = popen("/usr/sbin/sendmail -t","w") or die("Couldn't Open Sendmail");
-    fputs($fd, "To: ".$to." \n");
-    fputs($fd, "From: \"MARTI\" <marti@tripleawarclub.org> \n");
-    fputs($fd, "Subject: ".$subject." \n");
-    fputs($fd, "X-Mailer: PHP3 \n\n");
-    fputs($fd, $message);
-    pclose($fd);*/
-
 		if ($mailsend) {
-				echo("<p>Dice results were sent via email!</p> <br> <a href='".$this->domain."/MARTI_verify.php?date=$date&iv=$iv&enc=$encrypted_data'>click here to verify the roll</a><br>");
-			}
-		else {
-		   echo("<p>Email delivery failed...</p> Dice results were not sent. <br> Please try it later again.");
-		   exit("<p>fatal error: email delivery failed!");
+			echo "<p>Dice results were sent via email!</p> <br> <a href='{$this->domain}/MARTI_verify.php?date=$date&iv=$iv&enc=$encrypted_data'>click here to verify the roll</a><br>";
+		} else {
+			echo "<p>Email delivery failed...</p> Dice results were not sent. <br> Please try it later again.";
+			exit("<p>fatal error: email delivery failed!");
 		}
-
 	}
-
-
 }
 ?>

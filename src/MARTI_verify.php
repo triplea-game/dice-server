@@ -1,8 +1,9 @@
 <?php
 include_once('dice.class.php');
 
-if(!isset($_GET["iv"]) || !isset($_GET["enc"]))
+if (!isset($_GET["iv"]) || !isset($_GET["enc"])) {
 	exit("error: You used an invalid link!");
+}
 
 $iv = $_GET["iv"];
 $enc = $_GET["enc"];
