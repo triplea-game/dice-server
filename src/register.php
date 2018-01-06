@@ -5,7 +5,7 @@
 	</head>
 	<body>
 		<?php
-		if (! isset($_POST["email"]) || empty($_POST["email"])) {
+		if (!isset($_POST["email"]) || empty($_POST["email"])) {
 		// template for first load
 		?>
 		<form method="post" action="register.php">
@@ -23,8 +23,9 @@
 			$dice = new dice();
 
 			// check if the email already exists
-			if ($dice->checkIfMailIsRegistered($email))
+			if ($dice->checkIfMailIsRegistered($email)) {
 				exit("This email is already registered");
+			}
 
 			// collecting information for validation
 			$time = time(); // in unix format
@@ -33,34 +34,23 @@
 			// TODO: remove this column from the database
 			$IP = 0;
 
-			$sql = "SELECT email FROM pending_validations WHERE email=?";
-			$rows = [];
-			if ( $sth = $dice->dbconn->prepare( $sql )) {
-				$sth->bind_param('s',$email);
-				$sth->execute() or trigger_error($mysqli->error);
-				$sth->bind_result($emailColumn);
-				while($sth->fetch()) {
-					$rows[] = $emailColumn;
-				}
-			} else {
-				echo "A DB error has occured, please contact an admin. (";
-				var_dump( $dice->dbconn->errno );
-				echo ")";
-				exit;
-			}
+			$sth = $dice->dbconn->prepare("SELECT email FROM pending_validations WHERE email=?");
+			$sth->bind_param('s', $email);
+			$sth->execute() or trigger_error($mysqli->error);
 
 			// insert or update pending validation
-			if (empty($rows)) {
+			if ($sth->num_rows) {
 				$sql = "INSERT INTO pending_validations (email, validation_key, time_stamp, IP) VALUES (?, ?, FROM_UNIXTIME(?), ?)";
-				$sth = $dice->dbconn->prepare( $sql );
-				$sth->bind_param('ssss', $email, $validation, $time, $IP );
+				$sth = $dice->dbconn->prepare($sql);
+				$sth->bind_param('ssss', $email, $validation, $time, $IP);
 				$sth->execute();
 			} else {
-				$sql = "UPDATE pending_validations SET validation_key=?, time_stamp= FROM_UNIXTIME(?), IP=? WHERE email=?";
-				$sth = $dice->dbconn->prepare( $sql );
-				$sth->bind_param('ssss', $validation, $time, $IP, $email );
+				$sql = "UPDATE pending_validations SET validation_key=?, time_stamp=FROM_UNIXTIME(?), IP=? WHERE email=?";
+				$sth = $dice->dbconn->prepare($sql);
+				$sth->bind_param('ssss', $validation, $time, $IP, $email);
 				$sth->execute();
 			}
+			$sth->close();
 			// sending email
 			$to = $email;
 			$email_enc = urlencode($email);
@@ -70,7 +60,7 @@
 			$ehead .= "List-Unsubscribe:<$dice->domain/unsubscribe.php?email=$email_enc>\r\n";
 			$message = "To validate your email click this link: $dice->domain/validate.php?email=$email_enc&val=$validation";
 			$message .= "\r\n\r\nTo unsubscribe from this service go to $dice->domain/unsubscribe.php?email=$email_enc";
-			$mailsend= @mail($to,$subj,$message,$ehead,"-f $from -r no-reply@tripleawarclub.org");
+			$mailsend= @mail($to, $subj, $message, $ehead, "-f $from -r no-reply@tripleawarclub.org");
 
 			if ($mailsend) {
 				echo("<p>You should receive an email in your postbox with a validation link soon.</p>After validating your email you can use the MARTI dice server");

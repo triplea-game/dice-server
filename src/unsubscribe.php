@@ -27,17 +27,11 @@
 			if (!$dice->checkIfMailIsRegistered($email)) {
 				exit("This email is not registered, or was never validated.");
 			}
-			$sql = "DELETE FROM dice_emails WHERE registered_email=?";
 
-			if ($sth = $dice->dbconn->prepare( $sql )) {
-				$sth->bind_param('s',$email);
-				$sth->execute() or trigger_error($mysqli->error);
-			} else {
-				echo "A DB error has occured, please contact an admin. (2-";
-				var_dump( $dice->dbconn->errno );
-				echo ")";
-				exit;
-			}
+			$sth = $dice->dbconn->prepare("DELETE FROM dice_emails WHERE registered_email=?");
+			$sth->bind_param('s',$email);
+			$sth->execute() or trigger_error($mysqli->error);
+
 			echo "Your email was successfully removed. You will no longer receive dice emails.";
 		}
 		?>

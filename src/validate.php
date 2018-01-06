@@ -9,54 +9,30 @@
 			exit("error: You used an invalid link!");
 		}
 
-		$email = filter_input( INPUT_GET, "email", FILTER_SANITIZE_EMAIL );
-		$validation = filter_input( INPUT_GET, "val", FILTER_SANITIZE_STRING );
+		$email = $_GET["email"];
+		$validation = $_GET["val"];
 		require_once("dice.class.php");
 
-		$sql = "SELECT email AS CNT FROM pending_validations WHERE email=? and validation_key=?";
 		$dice = new dice();
-		$rows = [];
 
-		if ( $sth = $dice->dbconn->prepare( $sql )) {
-			$sth->bind_param('ss',$email,$validation);
-			$sth->execute() or trigger_error($mysqli->error);
-			$sth->bind_result($r_email,$r_validation);
-			while($sth->fetch()) {
-				$rows[] = [$r_email, $r_validation];
-			}
-		} else {
-			echo "A DB error has occured, please contact an admin. (1-";
-			var_dump( $dice->dbconn->errno );
-			echo ")";
-			exit;
-		}
-		if (empty($rows)) {
+		$sth = $dice->dbconn->prepare("SELECT email AS CNT FROM pending_validations WHERE email=? and validation_key=?");
+		$sth->bind_param('ss', $email, $validation);
+		$sth->execute() or trigger_error($mysqli->error);
+		if ($sth->num_rows === 0) {
 			exit("Could not verify the data. Please check the link you have received in your email");
 		}
+		$sth->close();
 
-		$sql = "INSERT INTO dice_emails (registered_email) VALUES (?)";
+		$sth = $dice->dbconn->prepare("INSERT INTO dice_emails (registered_email) VALUES (?)");
+		$sth->bind_param('s',$email);
+		$sth->execute() or trigger_error($mysqli->error);
+		$sth->close();
 
-		if ($sth = $dice->dbconn->prepare( $sql )) {
-			$sth->bind_param('s',$email);
-			$sth->execute() or trigger_error($mysqli->error);
-		} else {
-			echo "A DB error has occured, please contact an admin. (2-";
-			var_dump( $dice->dbconn->errno );
-			echo ")";
-			exit;
-		}
+		$sth = $dice->dbconn->prepare("DELETE FROM pending_validations WHERE email=?");
+		$sth->bind_param('s',$email);
+		$sth->execute() or trigger_error($mysqli->error);
+		$sth->close();
 
-		$sql = "DELETE FROM pending_validations WHERE email=?";
-
-		if ($sth = $dice->dbconn->prepare( $sql )) {
-			$sth->bind_param('s',$email);
-			$sth->execute() or trigger_error($mysqli->error);
-		} else {
-			echo "A DB error has occured, please contact an admin. (3-";
-			var_dump( $dice->dbconn->errno );
-			echo ")";
-			exit;
-		}
 		echo "Registration was successfull. You can now use the MARTI dice server.";
 		?>
 	</body>
