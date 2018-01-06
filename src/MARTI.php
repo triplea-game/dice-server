@@ -36,12 +36,9 @@ ini_set('display_errors', '1');
 
 		$dice = new dice();
 
-		//check if all emails are registered
-		try {
-			$dice->requireMailsAreRegistered($output['emails']);
-		} catch (exception $e) {
-			exit($e->getMessage());
-		}
+		//check if all emails are registered.
+		// This method exits if one of them is not
+		$dice->requireMailsAreRegistered($output['emails']);
 
 		//create dice
 		$output['dice'] = $dice->createdice($numdice, $numsides);

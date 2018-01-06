@@ -55,15 +55,15 @@ class dice {
 		}
 
 		if (!$registered_mails) {
-			throw new exception("fatal error: none of the emails is registered. Please register emails at {$this->domain}/register.php !");
+			exit("fatal error: none of the emails is registered. Please register emails at {$this->domain}/register.php !");
 		}
 
 		foreach($emails as $email) {
 			if (!in_array($email, $registered_mails)) {
-				throw new exception("fatal error: email $email is not registered. Please register email at {$this->domain}/register.php !");
+				exit("fatal error: email $email is not registered. Please register email at {$this->domain}/register.php !");
 			}
 		}
-		throw new exception("fatal error: unknown error with email adresses!");
+		exit("fatal error: unknown error with email adresses!");
 	}
 
 	/**
