@@ -26,9 +26,6 @@ class dice {
 		return $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST'] . $pathWithoutLastSegment;
 	}
 
-	////////////////////////////////
-	//        database            //
-	////////////////////////////////
 	function connectDatabase() {
 		if (!is_null($this->db)) {
 			return;
@@ -43,21 +40,6 @@ class dice {
 			exit("fatal error: could not connect to database!<br>" . mysqli_connect_error() . "!");
 		}
 		$this->db = mysqli_select_db($this->dbconn, $database);
-	}
-
-	function updateStats($numdice) {
-		$this->connectDatabase();
-
-		$sql = "UPDATE stats SET requests=requests+1, dice_rolled=dice_rolled+$numdice";
-		$result = $this->dbconn->query($sql) or exit("fatal error: data connection lost @updateStats!");
-	}
-
-	function getStats() {
-		$this->connectDatabase();
-
-		$sql = "SELECT * FROM stats";
-		$result = $this->dbconn->query($sql) or exit("fatal error: data connection lost @getStats!");
-		return mysqli_fetch_array($result);
 	}
 
 	/**
@@ -97,29 +79,6 @@ class dice {
 		$result = $this->dbconn->query($sql) or exit("fatal error: data connection error {$this->dbconn->error}!");
 		return $result->num_rows === 1;
 	}
-
-	/**
-	 * runs any SQL query on the database
-	 * @param string $sql
-	 * @return mixed mysqlressource
-	 */
-	function runQuery($sql) {
-		$this->connectDatabase();
-		return $this->dbconn->query($sql) or exit("fatal error: {$this->dbconn->error}!");
-	}
-
-	function runStatement($sth) {
-		$this->connectDatabase();
-		$result = $sth->execute();
-		return $result;
-	}
-	function disconnectDatabase() {
-		mysqli_close($this->dbconn);
-	}
-
-	////////////////////////////////
-	//        Encryption          //
-	////////////////////////////////
 
 	/**
 	 * returns the date and key
@@ -216,9 +175,6 @@ class dice {
 		return $now != $current_key['date'];
 	}
 
-	////////////////////////////////
-	//       dice and mail        //
-	////////////////////////////////
 	function createdice($numdice, $numsides) {
 		$i = 0;
 		while ($i < $numdice) {
