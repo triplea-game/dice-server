@@ -15,7 +15,7 @@
 
 		$dice = new dice();
 
-		$sth = $dice->dbconn->prepare("SELECT email AS CNT FROM pending_validations WHERE email=? and validation_key=?");
+		$sth = $dice->dbconn->prepare("SELECT email FROM pending_validations WHERE email=? AND validation_key=?");
 		$sth->bind_param('ss', $email, $validation);
 		$sth->execute() or trigger_error($mysqli->error);
 		if ($sth->num_rows === 0) {
@@ -24,12 +24,12 @@
 		$sth->close();
 
 		$sth = $dice->dbconn->prepare("INSERT INTO dice_emails (registered_email) VALUES (?)");
-		$sth->bind_param('s',$email);
+		$sth->bind_param('s', $email);
 		$sth->execute() or trigger_error($mysqli->error);
 		$sth->close();
 
 		$sth = $dice->dbconn->prepare("DELETE FROM pending_validations WHERE email=?");
-		$sth->bind_param('s',$email);
+		$sth->bind_param('s', $email);
 		$sth->execute() or trigger_error($mysqli->error);
 		$sth->close();
 

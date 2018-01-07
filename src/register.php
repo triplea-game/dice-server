@@ -38,8 +38,10 @@
 			$sth->bind_param('s', $email);
 			$sth->execute() or trigger_error($mysqli->error);
 
+			$isNewRegistration = $sth->num_rows === 0;
+			$sth->close();
 			// insert or update pending validation
-			if ($sth->num_rows) {
+			if ($isNewRegistration) {
 				$sql = "INSERT INTO pending_validations (email, validation_key, time_stamp, IP) VALUES (?, ?, FROM_UNIXTIME(?), ?)";
 				$sth = $dice->dbconn->prepare($sql);
 				$sth->bind_param('ssss', $email, $validation, $time, $IP);
@@ -56,10 +58,10 @@
 			$email_enc = urlencode($email);
 			$subj = "Registration for MARTI dice server";
 			$from = "marti@tripleawarclub.org";
-			$ehead= "From: MARTI<".$from.">\r\n";
-			$ehead .= "List-Unsubscribe:<$dice->domain/unsubscribe.php?email=$email_enc>\r\n";
+			$ehead= "From: MARTI<$from>\n";
+			$ehead .= "List-Unsubscribe:<$dice->domain/unsubscribe.php?email=$email_enc>\n";
 			$message = "To validate your email click this link: $dice->domain/validate.php?email=$email_enc&val=$validation";
-			$message .= "\r\n\r\nTo unsubscribe from this service go to $dice->domain/unsubscribe.php?email=$email_enc";
+			$message .= "\n\nTo unsubscribe from this service go to $dice->domain/unsubscribe.php?email=$email_enc";
 			$mailsend= @mail($to, $subj, $message, $ehead, "-f $from -r no-reply@tripleawarclub.org");
 
 			if ($mailsend) {
