@@ -18,7 +18,7 @@
 		<?php
 		} else {
 		// template for handling postbacks
-			$email = filter_input( INPUT_POST, "email", FILTER_SANITIZE_EMAIL );
+			$email = $_POST["email"];
 			require_once("dice.class.php");
 			$dice = new dice();
 

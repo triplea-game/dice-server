@@ -46,22 +46,25 @@ class dice {
 	 */
 	function requireMailsAreRegistered(array $emails) {
 		$this->connectDatabase();
-		$emails_string = "'" . implode("', '", $emails) . "'";
-		$sql = "SELECT registered_email FROM dice_emails WHERE registered_email IN ($emails_string)";
-		$result = $this->dbconn->query($sql) or exit("fatal error: data connection lost @requireMailsAreRegistered!");
-		$registered_mails = $result->fetch_array();
-		if ($result->num_rows === count($emails)) {
+		$placeholder = "'" . implode("', '", array_fill(0, count($emails), "?")) . "'";
+		$sql = "SELECT registered_email FROM dice_emails WHERE registered_email IN ($placeholder)";
+		$statement = $this->dbconn->prepare($sql);
+		$bind_params = array_merge([implode(array_fill(0, count($emails), "s"))], $emails);
+		call_user_func_array([$statement, "bind_param"], $bind_params);
+		$statement->execute() or exit("fatal error: data connection lost @requireMailsAreRegistered!");
+		if ($this->dbconn->affected_rows === count($emails)) {
 			return;	// all emails are registered
-		}
-
-		if (!$registered_mails) {
+		} else if ($this->dbconn->affected_rows === 0) {
 			exit("fatal error: none of the emails is registered. Please register emails at {$this->domain}/register.php !");
 		}
-
-		foreach($emails as $email) {
-			if (!in_array($email, $registered_mails)) {
-				exit("fatal error: email $email is not registered. Please register email at {$this->domain}/register.php !");
+		$statement->bind_result($email);
+		while ($statement->fetch() && !empty($emails)) {
+			if (($key = array_search($email, $emails)) !== false) {
+				unset($emails[$key]);
 			}
+		}
+		if (!empty($emails)) {
+			exit("fatal error: emails " . implode(", ", $emails) . " are not registered. Please register those emails at {$this->domain}/register.php !");
 		}
 		exit("fatal error: unknown error with email adresses!");
 	}
@@ -72,10 +75,12 @@ class dice {
 	 */
 	function checkIfMailIsRegistered($email) {
 		$this->connectDatabase();
-
-		$sql = "SELECT registered_email FROM dice_emails WHERE registered_email = '$email'";
-		$result = $this->dbconn->query($sql) or exit("fatal error: data connection error {$this->dbconn->error}!");
-		return $result->num_rows === 1;
+		$statement = $this->dbconn->prepare("SELECT COUNT(*) FROM dice_emails WHERE registered_email=?");
+		$statement->bind_param("s", $email);
+		$statement->execute() or exit("fatal error: data connection error {$this->dbconn->error}!");
+		$statement->bind_result($email_count);
+		$statement->fetch();
+		return $email_count === 1;
 	}
 
 	/**
