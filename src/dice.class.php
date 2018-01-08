@@ -126,6 +126,7 @@ class dice {
 
 	function keygen() {
 		$tempstring = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		$pass = "";
 		for($length = 1; $length < 24; $length++) {
 			$temp = str_shuffle($tempstring);
 			$char = mt_rand(0, strlen($temp));
