@@ -15,10 +15,12 @@
 
 		$dice = new dice();
 
-		$sth = $dice->dbconn->prepare("SELECT email FROM pending_validations WHERE email=? AND validation_key=?");
+		$sth = $dice->dbconn->prepare("SELECT COUNT(*) FROM pending_validations WHERE email=? AND validation_key=?");
 		$sth->bind_param('ss', $email, $validation);
 		$sth->execute() or trigger_error($dice->dbconn->error);
-		if ($sth->num_rows === 0) {
+		$sth->bind_result($entry_count);
+		$sth->fetch();
+		if ($entry_count === 0) {
 			exit("Could not verify the data. Please check the link you have received in your email");
 		}
 		$sth->close();
