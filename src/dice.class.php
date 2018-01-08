@@ -46,25 +46,28 @@ class dice {
 	 */
 	function requireMailsAreRegistered(array $emails) {
 		$this->connectDatabase();
-		$placeholder = "'" . implode("', '", array_fill(0, count($emails), "?")) . "'";
+		$emails = array_unique($emails);
+		$emailCount = count($emails);
+		$placeholder = implode(", ", array_fill(0, $emailCount, "?"));
 		$sql = "SELECT registered_email FROM dice_emails WHERE registered_email IN ($placeholder)";
 		$statement = $this->dbconn->prepare($sql);
-		$bind_params = array_merge([implode(array_fill(0, count($emails), "s"))], $emails);
-		call_user_func_array([$statement, "bind_param"], $bind_params);
+		$statement->bind_param(str_repeat("s", $emailCount), ...$emails);
 		$statement->execute() or exit("fatal error: data connection lost @requireMailsAreRegistered!");
-		if ($this->dbconn->affected_rows === count($emails)) {
+		$statement->bind_result($email);
+		$result = [];
+		while ($statement->fetch()) {
+			$result[] = $email;
+		}
+		echo $statement->num_rows;
+		echo $emailCount;
+		if ($statement->num_rows === $emailCount) {
 			return;	// all emails are registered
-		} else if ($this->dbconn->affected_rows === 0) {
+		} else if ($statement->num_rows === 0) {
 			exit("fatal error: none of the emails is registered. Please register emails at {$this->domain}/register.php !");
 		}
-		$statement->bind_result($email);
-		while ($statement->fetch() && !empty($emails)) {
-			if (($key = array_search($email, $emails)) !== false) {
-				unset($emails[$key]);
-			}
-		}
-		if (!empty($emails)) {
-			exit("fatal error: emails " . implode(", ", $emails) . " are not registered. Please register those emails at {$this->domain}/register.php !");
+		$missingEmails = array_diff($emails, $result);
+		if (!empty($missingEmails)) {
+			exit("fatal error: emails " . implode(", ", $missingEmails) . " are not registered. Please register those emails at {$this->domain}/register.php !");
 		}
 		exit("fatal error: unknown error with email adresses!");
 	}
