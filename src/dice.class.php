@@ -76,7 +76,7 @@ class dice {
 	 * Checks if a specific email is already registered
 	 * @return bool Is the email registered
 	 */
-	function checkIfMailIsRegistered($email) {
+	function isMailRegistered($email) {
 		$this->connectDatabase();
 		$statement = $this->dbconn->prepare("SELECT COUNT(*) FROM dice_emails WHERE registered_email=?");
 		$statement->bind_param("s", $email);

@@ -22,7 +22,7 @@
 			require_once("dice.class.php");
 			$dice = new dice();
 
-			if (!$dice->checkIfMailIsRegistered($email)) {
+			if (!$dice->isMailRegistered($email)) {
 				exit("This email is not registered, or was never validated.");
 			}
 
