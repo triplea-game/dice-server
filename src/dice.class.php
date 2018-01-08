@@ -58,8 +58,6 @@ class dice {
 		while ($statement->fetch()) {
 			$result[] = $email;
 		}
-		echo $statement->num_rows;
-		echo $emailCount;
 		if ($statement->num_rows === $emailCount) {
 			return;	// all emails are registered
 		} else if ($statement->num_rows === 0) {
