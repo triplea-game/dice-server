@@ -1,8 +1,7 @@
 <?php
 class dice {
 	var $domain;
-	var $dbconn;
-	var $db = null;
+	var $dbconn = null;
 	var $enc = [];
 
 	function __construct() {
@@ -11,8 +10,8 @@ class dice {
 	}
 
 	function __destruct() {
-		if (!is_null($this->db)) {
-			$this->disconnectDatabase();
+		if (!is_null($this->dbconn)) {
+			$this->dbconn->close();
 		}
 	}
 
@@ -26,11 +25,8 @@ class dice {
 		return $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST'] . $pathWithoutLastSegment;
 	}
 
-	////////////////////////////////
-	//        database            //
-	////////////////////////////////
 	function connectDatabase() {
-		if (!is_null($this->db)) {
+		if (!is_null($this->dbconn)) {
 			return;
 		}
 
@@ -40,50 +36,34 @@ class dice {
 		$database = getenv("MARTI_DB_NAME");
 		$this->dbconn = new mysqli($host, $user, $password, $database);
 		if ($this->dbconn->connect_errno > 0) {
-			exit("fatal error: could not connect to database!<br>" . mysqli_connect_error() . "!");
+			exit("fatal error: could not connect to database!<br>" . $this->dbconn->connect_error . "!");
 		}
-		$this->db = mysqli_select_db($this->dbconn, $database);
-	}
-
-	function updateStats($numdice) {
-		$this->connectDatabase();
-
-		$sql = "UPDATE stats SET requests=requests+1, dice_rolled=dice_rolled+$numdice";
-		$result = $this->dbconn->query($sql) or exit("fatal error: data connection lost @updateStats!");
-	}
-
-	function getStats() {
-		$this->connectDatabase();
-
-		$sql = "SELECT * FROM stats";
-		$result = $this->dbconn->query($sql) or exit("fatal error: data connection lost @getStats!");
-		return mysqli_fetch_array($result);
 	}
 
 	/**
 	 * Checks if all receiving email adresses are registered
 	 * @returns bool
 	 */
-	function checkIfMailsAreRegistered(array $emails) {
+	function requireMailsAreRegistered(array $emails) {
 		$this->connectDatabase();
 		$emails_string = "'" . implode("', '", $emails) . "'";
 		$sql = "SELECT registered_email FROM dice_emails WHERE registered_email IN ($emails_string)";
-		$result = $this->dbconn->query($sql) or exit("fatal error: data connection lost @checkIfMailsAreRegistered!");
-		$registered_mails = mysqli_fetch_array($result);
+		$result = $this->dbconn->query($sql) or exit("fatal error: data connection lost @requireMailsAreRegistered!");
+		$registered_mails = $result->fetch_array();
 		if ($result->num_rows === count($emails)) {
-			return true;	// all emails are registered
+			return;	// all emails are registered
 		}
 
 		if (!$registered_mails) {
-			throw new exception("fatal error: none of the emails is registered. Please register emails at {$this->domain}/register.php !");
+			exit("fatal error: none of the emails is registered. Please register emails at {$this->domain}/register.php !");
 		}
 
 		foreach($emails as $email) {
 			if (!in_array($email, $registered_mails)) {
-				throw new exception("fatal error: email $email is not registered. Please register email at {$this->domain}/register.php !");
+				exit("fatal error: email $email is not registered. Please register email at {$this->domain}/register.php !");
 			}
 		}
-		throw new exception("fatal error: unknown error with email adresses!");
+		exit("fatal error: unknown error with email adresses!");
 	}
 
 	/**
@@ -97,29 +77,6 @@ class dice {
 		$result = $this->dbconn->query($sql) or exit("fatal error: data connection error {$this->dbconn->error}!");
 		return $result->num_rows === 1;
 	}
-
-	/**
-	 * runs any SQL query on the database
-	 * @param string $sql
-	 * @return mixed mysqlressource
-	 */
-	function runQuery($sql) {
-		$this->connectDatabase();
-		return $this->dbconn->query($sql) or exit("fatal error: {$this->dbconn->error}!");
-	}
-
-	function runStatement($sth) {
-		$this->connectDatabase();
-		$result = $sth->execute();
-		return $result;
-	}
-	function disconnectDatabase() {
-		mysqli_close($this->dbconn);
-	}
-
-	////////////////////////////////
-	//        Encryption          //
-	////////////////////////////////
 
 	/**
 	 * returns the date and key
@@ -216,9 +173,6 @@ class dice {
 		return $now != $current_key['date'];
 	}
 
-	////////////////////////////////
-	//       dice and mail        //
-	////////////////////////////////
 	function createdice($numdice, $numsides) {
 		$i = 0;
 		while ($i < $numdice) {

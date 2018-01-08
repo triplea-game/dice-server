@@ -10,8 +10,6 @@ ini_set('display_errors', '1');
 	</head>
 	<body>
 		<?php
-		error_reporting(E_ALL);
-		ini_set('display_errors', '1');
 		$output = [];
 
 		$numsides = $_POST['numsides'];
@@ -25,7 +23,7 @@ ini_set('display_errors', '1');
 			exit("fatal error: wrong input!");
 		}
 		if (empty($email2)) {
-			exit("fatal error: no second email found. Please enter an email address into the Cc-field!");
+			exit("fatal error: no second email found. Please enter an email address into the CC-field!");
 		}
 		//format multiple emails in one line
 		$emails1 = explode(" ", $email1);
@@ -38,12 +36,9 @@ ini_set('display_errors', '1');
 
 		$dice = new dice();
 
-		//check if all emails are registered
-		try {
-			$dice->checkIfMailsAreRegistered($output['emails']);
-		} catch (exception $e) {
-			exit($e->getMessage());
-		}
+		//check if all emails are registered.
+		// This method exits if one of them is not
+		$dice->requireMailsAreRegistered($output['emails']);
 
 		//create dice
 		$output['dice'] = $dice->createdice($numdice, $numsides);
