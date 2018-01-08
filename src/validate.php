@@ -17,7 +17,7 @@
 
 		$sth = $dice->dbconn->prepare("SELECT email FROM pending_validations WHERE email=? AND validation_key=?");
 		$sth->bind_param('ss', $email, $validation);
-		$sth->execute() or trigger_error($mysqli->error);
+		$sth->execute() or trigger_error($dice->dbconn->error);
 		if ($sth->num_rows === 0) {
 			exit("Could not verify the data. Please check the link you have received in your email");
 		}
@@ -25,12 +25,12 @@
 
 		$sth = $dice->dbconn->prepare("INSERT INTO dice_emails (registered_email) VALUES (?)");
 		$sth->bind_param('s', $email);
-		$sth->execute() or trigger_error($mysqli->error);
+		$sth->execute() or trigger_error($dice->dbconn->error);
 		$sth->close();
 
 		$sth = $dice->dbconn->prepare("DELETE FROM pending_validations WHERE email=?");
 		$sth->bind_param('s', $email);
-		$sth->execute() or trigger_error($mysqli->error);
+		$sth->execute() or trigger_error($dice->dbconn->error);
 		$sth->close();
 
 		echo "Registration was successfull. You can now use the MARTI dice server.";
