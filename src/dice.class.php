@@ -48,27 +48,20 @@ class dice {
 		$this->connectDatabase();
 		$emails = array_unique($emails);
 		$emailCount = count($emails);
-		$placeholder = implode(", ", array_fill(0, $emailCount, "?"));
-		$sql = "SELECT COUNT(*), registered_email FROM dice_emails WHERE registered_email IN ($placeholder) GROUP BY registered_email";
+		$sql = "SELECT email FROM ("
+				. implode(" UNION ALL ", array_fill(0, $emailCount, "SELECT ? email"))
+				. ") emails WHERE email NOT IN (SELECT registered_email FROM dice_emails)";
 		$statement = $this->dbconn->prepare($sql);
 		$statement->bind_param(str_repeat("s", $emailCount), ...$emails);
 		$statement->execute() or exit("fatal error: data connection lost @requireMailsAreRegistered!");
-		$statement->bind_result($count, $email);
-		$result = [];
+		$statement->bind_result($missingEmail);
+		$missingEmails = [];
 		while ($statement->fetch()) {
-			if ($count === $emailCount) {
-				return;	// all emails are registered
-			}
-			$result[] = $email;
+			$missingEmails[] = $missingEmail;
 		}
-		if ($statement->num_rows === 0) {
-			exit("fatal error: none of the emails is registered. Please register emails at {$this->domain}/register.php !");
-		}
-		$missingEmails = array_diff($emails, $result);
 		if (!empty($missingEmails)) {
 			exit("fatal error: emails " . implode(", ", $missingEmails) . " are not registered. Please register those emails at {$this->domain}/register.php !");
 		}
-		exit("fatal error: unknown error with email adresses!");
 	}
 
 	/**
