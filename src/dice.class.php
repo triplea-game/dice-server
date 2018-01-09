@@ -49,18 +49,19 @@ class dice {
 		$emails = array_unique($emails);
 		$emailCount = count($emails);
 		$placeholder = implode(", ", array_fill(0, $emailCount, "?"));
-		$sql = "SELECT registered_email FROM dice_emails WHERE registered_email IN ($placeholder)";
+		$sql = "SELECT COUNT(*), registered_email FROM dice_emails WHERE registered_email IN ($placeholder) GROUP BY registered_email";
 		$statement = $this->dbconn->prepare($sql);
 		$statement->bind_param(str_repeat("s", $emailCount), ...$emails);
 		$statement->execute() or exit("fatal error: data connection lost @requireMailsAreRegistered!");
-		$statement->bind_result($email);
+		$statement->bind_result($count, $email);
 		$result = [];
 		while ($statement->fetch()) {
+			if ($count === $emailCount) {
+				return;	// all emails are registered
+			}
 			$result[] = $email;
 		}
-		if ($statement->num_rows === $emailCount) {
-			return;	// all emails are registered
-		} else if ($statement->num_rows === 0) {
+		if ($statement->num_rows === 0) {
 			exit("fatal error: none of the emails is registered. Please register emails at {$this->domain}/register.php !");
 		}
 		$missingEmails = array_diff($emails, $result);
