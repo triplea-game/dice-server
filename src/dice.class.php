@@ -129,7 +129,7 @@ class dice {
 		$pass = "";
 		for($length = 1; $length < 24; $length++) {
 			$temp = str_shuffle($tempstring);
-			$char = mt_rand(0, strlen($temp));
+			$char = mt_rand(0, strlen($temp) - 1);
 			$pass .= $temp[$char];
 		}
 		return $pass;
