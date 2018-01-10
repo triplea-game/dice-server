@@ -38,7 +38,10 @@ ini_set('display_errors', '1');
 
 		//check if all emails are registered.
 		// This method exits if one of them is not
-		$dice->requireMailsAreRegistered($output['emails']);
+		$missingEmails = $dice->getUnregisteredMails($output['emails']);
+		if (!empty($missingEmails)) {
+			exit("fatal error: emails " . implode(", ", $missingEmails) . " are not registered. Please register those emails at {$this->domain}/register.php !");
+		}
 
 		//create dice
 		$output['dice'] = $dice->createdice($numdice, $numsides);

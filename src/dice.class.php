@@ -44,7 +44,7 @@ class dice {
 	 * Checks if all receiving email adresses are registered
 	 * @returns bool
 	 */
-	function requireMailsAreRegistered(array $emails) {
+	function getUnregisteredMails(array $emails) {
 		$this->connectDatabase();
 		$emails = array_unique($emails);
 		$emailCount = count($emails);
@@ -53,15 +53,13 @@ class dice {
 				. ") emails WHERE email NOT IN (SELECT registered_email FROM dice_emails)";
 		$statement = $this->dbconn->prepare($sql);
 		$statement->bind_param(str_repeat("s", $emailCount), ...$emails);
-		$statement->execute() or exit("fatal error: data connection lost @requireMailsAreRegistered!");
+		$statement->execute() or exit("fatal error: data connection lost @getUnregisteredMails!");
 		$statement->bind_result($missingEmail);
 		$missingEmails = [];
 		while ($statement->fetch()) {
 			$missingEmails[] = $missingEmail;
 		}
-		if (!empty($missingEmails)) {
-			exit("fatal error: emails " . implode(", ", $missingEmails) . " are not registered. Please register those emails at {$this->domain}/register.php !");
-		}
+		return $missingEmails;
 	}
 
 	/**
@@ -69,13 +67,7 @@ class dice {
 	 * @return bool Is the email registered
 	 */
 	function isMailRegistered($email) {
-		$this->connectDatabase();
-		$statement = $this->dbconn->prepare("SELECT COUNT(*) FROM dice_emails WHERE registered_email=?");
-		$statement->bind_param("s", $email);
-		$statement->execute() or exit("fatal error: data connection error {$this->dbconn->error}!");
-		$statement->bind_result($email_count);
-		$statement->fetch();
-		return $email_count === 1;
+		return empty(getUnregisteredMails([$email]));
 	}
 
 	/**
