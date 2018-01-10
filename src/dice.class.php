@@ -67,7 +67,7 @@ class dice {
 	 * @return bool Is the email registered
 	 */
 	function isMailRegistered($email) {
-		return empty(getUnregisteredMails([$email]));
+		return empty($this->getUnregisteredMails([$email]));
 	}
 
 	/**
