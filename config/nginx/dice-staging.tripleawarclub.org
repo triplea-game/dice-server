@@ -22,7 +22,7 @@ server {
   access_log /var/log/nginx/dice-staging.tripleawarclub.org-access.log;
   error_log /var/log/nginx/dice-staging.tripleawarclub.org-error.log;
 
-  index index.php;
+  index register.php;
 
   location ~ \.php$ {
     include snippets/fastcgi-php.conf;
