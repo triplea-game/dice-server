@@ -4,11 +4,9 @@
 	</head>
 	<body>
 		<?php
-		$email = filter_input( INPUT_POST, "email", FILTER_SANITIZE_EMAIL );
-		if (is_null( $email ) || $email===false) {
-			$email = filter_input( INPUT_GET, "email", FILTER_SANITIZE_EMAIL );
-		}
-		if (is_null( $email ) || $email===false) {
+		$email = $_POST["email"] ?? ($_GET["email"] ?? null);
+
+		if (is_null($email)) {
 		// template for first load
 		?>
 		<form method="post" action="unsubscribe.php">
@@ -24,7 +22,7 @@
 			require_once("dice.class.php");
 			$dice = new dice();
 
-			if (!$dice->checkIfMailIsRegistered($email)) {
+			if (!$dice->isMailRegistered($email)) {
 				exit("This email is not registered, or was never validated.");
 			}
 

@@ -18,12 +18,12 @@
 		<?php
 		} else {
 		// template for handling postbacks
-			$email = filter_input( INPUT_POST, "email", FILTER_SANITIZE_EMAIL );
+			$email = $_POST["email"];
 			require_once("dice.class.php");
 			$dice = new dice();
 
 			// check if the email already exists
-			if ($dice->checkIfMailIsRegistered($email)) {
+			if ($dice->isMailRegistered($email)) {
 				exit("This email is already registered");
 			}
 
