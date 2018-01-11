@@ -115,22 +115,13 @@ class dice {
 
 		if ($shouldWriteKey) {
 			$file = fopen("key.dat", "w");
-			$enc['key'] = $this->keygen();
+			$enc['key'] = base64_encode(random_bytes(24));
 			$enc['date'] = $this->getDate();
 			$output = serialize($enc);
 			fputs($file, $output);
 			fclose($file);
 			chmod("key.dat", 0600);
 		}
-	}
-
-	function keygen() {
-		$charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		$pass = "";
-		for($length = 0; $length < 24; $length++) {
-			$pass .= $charset[random_int(0, strlen($charset) - 1)];
-		}
-		return $pass;
 	}
 
 	function encrypt_data($input) {
