@@ -125,12 +125,10 @@ class dice {
 	}
 
 	function keygen() {
-		$tempstring = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		$charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		$pass = "";
-		for($length = 1; $length < 24; $length++) {
-			$temp = str_shuffle($tempstring);
-			$char = random_int(0, strlen($temp) - 1);
-			$pass .= $temp[$char];
+		for($length = 0; $length < 24; $length++) {
+			$pass .= $charset[random_int(0, strlen($charset) - 1)];
 		}
 		return $pass;
 	}
