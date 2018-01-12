@@ -156,10 +156,9 @@ class dice {
 	}
 
 	function createdice($numdice, $numsides) {
-		$i = 0;
-		while ($i < $numdice) {
-			$dice[$i] = mt_rand(1,$numsides);
-			$i++;
+		$dice = [];
+		for ($i = 0; $i < $numdice; $i++) {
+			$dice[$i] = mt_rand(1, $numsides);
 		}
 		return implode(",", $dice);
 	}
