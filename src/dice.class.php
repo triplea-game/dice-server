@@ -149,7 +149,7 @@ class dice {
 		$message .= "----------------------------------\n";
 		$message .= "This is an automatically created email of the TripleA Ladder. Please don't reply to it. \n\n";
 		$message .= "Verification Info: Follow this link to check if your dice are authentic \n";
-		$message .= "{$this->domain}/MARTI_verify.php?date=$date&iv=$iv&enc=$encrypted_data \n\n";
+		$message .= "{$this->domain}/MARTI_verify.php?iv=$iv&enc=$encrypted_data \n\n";
 		$message .= "************* \n";
 		$message .= "$iv \n";
 		$message .= "............. \n";
@@ -159,13 +159,13 @@ class dice {
 		$message .= "This Email is not SPAM.\nYou receive this email because of your registration at {$this->domain}\n";
 		$message .= "To unsubscribe from this service go to {$this->domain}/unsubscribe.php";
 
-		$ehead= "From: MARTI<marti@tripleawarclub.org>";
+		$ehead = "From: MARTI<marti@tripleawarclub.org>";
 		$subj = "$subject";
 
-		$mailsend= @mail($to, $subj, $message, $ehead);
+		$mailsend = @mail($to, $subj, $message, $ehead);
 
 		if ($mailsend) {
-			echo "<p>Dice results were sent via email!</p> <br> <a href='{$this->domain}/MARTI_verify.php?date=$date&iv=$iv&enc=$encrypted_data'>click here to verify the roll</a><br>";
+			echo "<p>Dice results were sent via email!</p> <br> <a href='{$this->domain}/MARTI_verify.php?iv=$iv&enc=$encrypted_data'>click here to verify the roll</a><br>";
 		} else {
 			echo "<p>Email delivery failed...</p> Dice results were not sent. <br> Please try it later again.";
 			exit("<p>fatal error: email delivery failed!");
