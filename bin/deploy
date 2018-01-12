@@ -14,8 +14,7 @@ fi
 find \
   "$2" \
   -mindepth 1 \
-  -not -name '*.dat' \
-  -not -name 'keys' \
+  -not -name 'key.dat' \
   -not -name '.well-known' \
   -delete
 

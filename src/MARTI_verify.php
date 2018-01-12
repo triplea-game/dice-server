@@ -10,7 +10,7 @@ $enc = $_GET["enc"];
 
 $dice = new dice();
 
-$outputArray = $dice->decrypt_data(null, $iv, $enc);
+$outputArray = $dice->decrypt_data($iv, $enc);
 
 echo "Dice were authentic: " . $outputArray['dice'];
 ?>
