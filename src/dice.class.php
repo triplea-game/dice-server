@@ -74,46 +74,30 @@ class dice {
 	 * returns the date and key
 	 * if no date is specified the latest key in key.dat will be returned
 	 */
-	function getEncryptionKey($date = null) {
-		// get old key
-		if ($date) {
-			$dir = dirname(__FILE__);
-			$keyfile = fopen("$dir/keys/$date.dat", "r");
-		} else {
-			// get current key
-			if (!file_exists("key.dat")) {
-				$this->setEncryptionKey();
-			}
-			$keyfile = fopen("key.dat", "r");
+	function getEncryptionKey() {
+		// get current key
+		if (!file_exists("key.dat")) {
+			$this->setEncryptionKey();
 		}
+		$keyfile = fopen("key.dat", "r");
 
 		if ($keyfile) {
 			$data = fread($keyfile, 8192);
-
 			$this->enc = unserialize($data);
 			fclose($keyfile);
 			return $this->enc;
 		} else {
-			exit("fatal error: Wrong date!");
+			exit("fatal error: No key file found");
 		}
 	}
 
 	function setEncryptionKey() {
-		$shouldWriteKey = true;
-		if (file_exists("key.dat")) {
-			$old = $this->getEncryptionKey();
-			$shouldWriteKey = copy("key.dat", "./keys/" . $old['date'] . ".dat");
-		}
-
-		if ($shouldWriteKey) {
-			$file = fopen("key.dat", "w");
-			$enc['key'] = base64_encode(random_bytes(24));
-			$enc['date'] = $this->getDate();
-			$output = serialize($enc);
-			fputs($file, $output);
-			fclose($file);
-			chmod("key.dat", 0600);
-		}
+		$file = fopen("key.dat", "w");
+		$enc['key'] = base64_encode(random_bytes(24));
+		$output = serialize($enc);
+		fputs($file, $output);
+		fclose($file);
+		chmod("key.dat", 0600);
 	}
 
 	function encrypt_data($input) {
@@ -132,13 +116,11 @@ class dice {
 		return $out;
 	}
 
-	function decrypt_data($date, $iv, $encrypted_data) {
+	function decrypt_data($iv, $encrypted_data) {
 		$iv = base64_decode(rawurldecode($iv));
 		$encrypted_data = base64_decode(rawurldecode($encrypted_data));
 
-		$encrypt_key = ($date != $this->getDate())
-			? $this->getEncryptionKey($date)
-			: $this->getEncryptionKey();
+		$encrypt_key = $this->getEncryptionKey();
 
 		$td = mcrypt_module_open('rijndael-256', '', 'cfb', '');
 		mcrypt_generic_init($td, $encrypt_key['key'], $iv);
@@ -147,12 +129,6 @@ class dice {
 		mcrypt_module_close($td);
 
 		return unserialize($decrypted_data);
-	}
-
-	function checkNewKeyNeeded() {
-		$now = $this->getDate();
-		$current_key = $this->getEncryptionKey();
-		return $now != $current_key['date'];
 	}
 
 	function createdice($numdice, $numsides) {
@@ -164,13 +140,8 @@ class dice {
 		return implode(",", $dice);
 	}
 
-	function getDate() {
-		return date("Y-m");
-	}
-
 	function sendEmail($emails, $subject, $dice, $iv, $encrypted_data) {
 		$to = implode (", ", $emails);
-		$date = $this->getDate();
 
 		// send email to member
 		$message = "Your dice are: $dice \n";
@@ -179,7 +150,7 @@ class dice {
 		$message .= "This is an automatically created email of the TripleA Ladder. Please don't reply to it. \n\n";
 		$message .= "Verification Info: Follow this link to check if your dice are authentic \n";
 		$message .= "{$this->domain}/MARTI_verify.php?date=$date&iv=$iv&enc=$encrypted_data \n\n";
-		$message .= "*** $date *** \n";
+		$message .= "************* \n";
 		$message .= "$iv \n";
 		$message .= "............. \n";
 		$message .= "$encrypted_data \n";
@@ -191,7 +162,7 @@ class dice {
 		$ehead= "From: MARTI<marti@tripleawarclub.org>";
 		$subj = "$subject";
 
-		$mailsend= @mail($to,$subj,$message,$ehead);
+		$mailsend= @mail($to, $subj, $message, $ehead);
 
 		if ($mailsend) {
 			echo "<p>Dice results were sent via email!</p> <br> <a href='{$this->domain}/MARTI_verify.php?date=$date&iv=$iv&enc=$encrypted_data'>click here to verify the roll</a><br>";
