@@ -26,8 +26,8 @@ ini_set('display_errors', '1');
 			exit("fatal error: no second email found. Please enter an email address into the CC-field!");
 		}
 		//format multiple emails in one line
-		$emails1 = explode(" ", $email1);
-		$emails2 = explode(" ", $email2);
+		$emails1 = preg_split("/\s+/", $email1, -1, PREG_SPLIT_NO_EMPTY);
+		$emails2 = preg_split("/\s+/", $email2, -1, PREG_SPLIT_NO_EMPTY);
 
 		$output['emails'] = array_merge($emails1, $emails2);
 		// get exact server time
