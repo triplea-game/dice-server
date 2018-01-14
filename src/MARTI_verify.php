@@ -1,8 +1,10 @@
 <?php
 include_once('dice.class.php');
 
-if (!isset($_GET["iv"]) || !isset($_GET["enc"])) {
-	exit("error: You used an invalid link!");
+if (!isset($_GET["iv"])) {
+	exit("Initialization vector not specified.");
+} elseif (!isset($_GET["enc"])) {
+	exit("Encrypted dice not specified.");
 }
 
 $iv = $_GET["iv"];

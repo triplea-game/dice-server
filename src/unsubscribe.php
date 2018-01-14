@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>Unsubscribe from MARTI dice services</title>
@@ -10,7 +11,7 @@
 		// template for first load
 		?>
 		<form method="post" action="unsubscribe.php">
-			Enter your email here to unsubscribe your email from MARTI dice services:
+			Enter your email to unsubscribe from MARTI dice services:
 			<br/>
 			<input type="text" name="email" width="40" />
 			<br/>
@@ -23,7 +24,7 @@
 			$dice = new dice();
 
 			if (!$dice->isMailRegistered($email)) {
-				exit("This email is not registered, or was never validated.");
+				exit("The email is not registered or was never validated.");
 			}
 
 			$sth = $dice->dbconn->prepare("DELETE FROM dice_emails WHERE registered_email=?");

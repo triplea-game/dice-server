@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Register your email for MARTI services</title>
+		<title>Register for MARTI dice services</title>
 	</head>
 	<body>
 		<?php
@@ -9,7 +9,7 @@
 		// template for first load
 		?>
 		<form method="post" action="register.php">
-			Enter your email here to register for using the MARTI dice server:
+			Enter your email to register for MARTI dice services:
 			<br/>
 			<input type="text" name="email" width="40" />
 			<br/>
@@ -24,7 +24,7 @@
 
 			// check if the email already exists
 			if ($dice->isMailRegistered($email)) {
-				exit("This email is already registered");
+				exit("The email is already registered.");
 			}
 
 			// generating a random token for registration validation
@@ -52,9 +52,9 @@
 			$mailsend= @mail($to, $subj, $message, $ehead, "-f $from -r no-reply@tripleawarclub.org");
 
 			if ($mailsend) {
-				echo("<p>You should receive an email in your postbox with a validation link soon.</p>After validating your email you can use the MARTI dice server");
+				echo("<p>You should receive an email with a validation link soon.</p>After validating your email you can use the MARTI dice server.");
 			} else {
-				echo("<p>Email delivery failed...</p>Please try it later again.");
+				echo("<p>Email delivery failed...</p>Validation email was not sent.<br>Please try again later.");
 			}
 		}
 		?>
