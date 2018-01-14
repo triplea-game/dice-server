@@ -1,5 +1,8 @@
 <?php
 class dice {
+	// NB: "fatal error:" prefix and "!" suffix on error messages in this
+	// module are required by the TripleA parser
+
 	var $domain;
 	var $dbconn = null;
 	var $enc = [];
@@ -36,7 +39,7 @@ class dice {
 		$database = getenv("MARTI_DB_NAME");
 		$this->dbconn = new mysqli($host, $user, $password, $database);
 		if ($this->dbconn->connect_errno > 0) {
-			exit("fatal error: could not connect to database!<br>" . $this->dbconn->connect_error . "!");
+			exit("fatal error: Could not connect to database.<br>" . $this->dbconn->connect_error . "!");
 		}
 	}
 
@@ -53,7 +56,7 @@ class dice {
 				. ") emails WHERE email NOT IN (SELECT registered_email FROM dice_emails)";
 		$statement = $this->dbconn->prepare($sql);
 		$statement->bind_param(str_repeat("s", $emailCount), ...$emails);
-		$statement->execute() or exit("fatal error: data connection lost @getUnregisteredMails!");
+		$statement->execute() or exit("fatal error: Data connection lost @getUnregisteredMails.!");
 		$statement->bind_result($missingEmail);
 		$missingEmails = [];
 		while ($statement->fetch()) {
@@ -87,7 +90,7 @@ class dice {
 			fclose($keyfile);
 			return $this->enc;
 		} else {
-			exit("fatal error: No key file found");
+			exit("fatal error: No key file found.!");
 		}
 	}
 
@@ -164,10 +167,10 @@ class dice {
 		$mailsend = @mail($to, $subj, $message, $ehead);
 
 		if ($mailsend) {
-			echo "<p>Dice results were sent via email!</p> <br> <a href='{$this->domain}/MARTI_verify.php?iv=$iv&enc=$encrypted_data'>click here to verify the roll</a><br>";
+			echo "<p>Dice results were sent via email.</p><br><a href='{$this->domain}/MARTI_verify.php?iv=$iv&enc=$encrypted_data'>Click here to verify the roll.</a><br>";
 		} else {
-			echo "<p>Email delivery failed...</p> Dice results were not sent. <br> Please try it later again.";
-			exit("<p>fatal error: email delivery failed!");
+			echo "<p>Email delivery failed...</p>Dice results were not sent.<br>Please try again later.";
+			exit("fatal error: Email delivery failed.!");
 		}
 	}
 }

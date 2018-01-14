@@ -6,7 +6,7 @@ ini_set('display_errors', '1');
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>	M.A.R.T.I. Server --> "more accurate rolls than irony"- server</title>
+		<title>M.A.R.T.I. Server -- "more accurate rolls than irony"</title>
 	</head>
 	<body>
 		<?php
@@ -18,12 +18,20 @@ ini_set('display_errors', '1');
 		$email1 = $_POST['roller'];
 		$email2 = $_POST['gm'];
 
+		// NB: "fatal error:" prefix and "!" suffix on error messages in this
+		// module are required by the TripleA parser
+
 		//check posted data
-		if (!is_numeric($numsides) || !is_numeric($numdice) || empty($output['subject']) || empty($email1)) {
-			exit("fatal error: wrong input!");
-		}
-		if (empty($email2)) {
-			exit("fatal error: no second email found. Please enter an email address into the CC-field!");
+		if (!is_numeric($numsides)) {
+			exit("fatal error: Dice sides is not numeric.!");
+		} elseif (!is_numeric($numdice)) {
+			exit("fatal error: Dice count is not numeric.!");
+		} elseif (empty($output['subject'])) {
+			exit("fatal error: Email subject not specified.!");
+		} elseif (empty($email1)) {
+			exit("fatal error: No first email specified. Please enter an email in the To field.!");
+		} elseif (empty($email2)) {
+			exit("fatal error: No second email specified. Please enter an email in the CC field.!");
 		}
 		//format multiple emails in one line
 		$emails1 = preg_split("/\s+/", $email1, -1, PREG_SPLIT_NO_EMPTY);
@@ -40,7 +48,7 @@ ini_set('display_errors', '1');
 		// This method exits if one of them is not
 		$missingEmails = $dice->getUnregisteredMails($output['emails']);
 		if (!empty($missingEmails)) {
-			exit("fatal error: emails " . implode(", ", $missingEmails) . " are not registered. Please register those emails at {$dice->domain}/register.php !");
+			exit("fatal error: Emails [" . implode(", ", $missingEmails) . "] are not registered. Please register them at {$dice->domain}/register.php .!");
 		}
 
 		//create dice
@@ -53,6 +61,7 @@ ini_set('display_errors', '1');
 		$dice->sendEmail($output['emails'], $output['subject'], $output['dice'], $enc_array['iv'], $enc_array['data']);
 
 		//show dice
+		// NB: "your dice are: " prefix and "<p>" suffix are required by the TripleA parser
 		echo "your dice are: {$output['dice']}<p><p>";
 		?>
 	</body>

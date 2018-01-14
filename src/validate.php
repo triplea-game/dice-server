@@ -5,8 +5,10 @@
 	</head>
 	<body>
 		<?php
-		if (!isset($_GET["email"]) || !isset($_GET["val"])) {
-			exit("error: You used an invalid link!");
+		if (!isset($_GET["email"])) {
+			exit("Email not specified.");
+		} elseif (!isset($_GET["val"])) {
+			exit("Validation key not specified.");
 		}
 
 		$email = $_GET["email"];
@@ -21,7 +23,7 @@
 		$sth->bind_result($entry_count);
 		$sth->fetch();
 		if ($entry_count === 0) {
-			exit("Could not verify the data. Please check the link you have received in your email");
+			exit("Could not validate the email. Please check the link you received in your email.");
 		}
 		$sth->close();
 
@@ -35,7 +37,7 @@
 		$sth->execute() or trigger_error($dice->dbconn->error);
 		$sth->close();
 
-		echo "Registration was successfull. You can now use the MARTI dice server.";
+		echo "Registration was successful. You can now use the MARTI dice server.";
 		?>
 	</body>
 </html>
