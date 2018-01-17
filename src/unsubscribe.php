@@ -29,7 +29,7 @@
 
 			$sth = $dice->dbconn->prepare("DELETE FROM dice_emails WHERE registered_email=?");
 			$sth->bind_param('s',$email);
-			$sth->execute() or trigger_error($dice->dbconn->error);
+			$sth->execute() or exit($dice->dbconn->error);
 
 			echo "Your email was successfully removed. You will no longer receive dice emails.";
 		}

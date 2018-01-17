@@ -37,7 +37,7 @@
 			$sql = "REPLACE INTO pending_validations (email, validation_key, IP) VALUES (?, ?, 0)";
 			$sth = $dice->dbconn->prepare($sql);
 			$sth->bind_param('ss', $email, $validation);
-			$sth->execute() or trigger_error($dice->dbconn->error);
+			$sth->execute() or exit($dice->dbconn->error);
 			$sth->close();
 
 			// sending email
