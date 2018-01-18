@@ -44,8 +44,7 @@ class dice {
 	}
 
 	/**
-	 * Checks if all receiving email adresses are registered
-	 * @returns bool
+	 * Returns an array of the emails from the given array of emails that are not registered.
 	 */
 	function getUnregisteredMails(array $emails) {
 		$this->connectDatabase();
@@ -56,7 +55,7 @@ class dice {
 				. ") emails WHERE email NOT IN (SELECT registered_email FROM dice_emails)";
 		$statement = $this->dbconn->prepare($sql);
 		$statement->bind_param(str_repeat("s", $emailCount), ...$emails);
-		$statement->execute() or exit("fatal error: Data connection lost @getUnregisteredMails.!");
+		$statement->execute() or exit("fatal error: Could not query unregistered emails.<br>" . $this->dbconn->error . "!");
 		$statement->bind_result($missingEmail);
 		$missingEmails = [];
 		while ($statement->fetch()) {
