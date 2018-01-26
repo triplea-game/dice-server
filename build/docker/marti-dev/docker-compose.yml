@@ -40,3 +40,9 @@ services:
 
 volumes:
   src-volume:
+    # Uncomment the following lines and update the device path to bind your host's src folder to the volume so you can
+    # edit the source code live without having to rebuild the src container.
+    #driver_opts:
+    #  type: none
+    #  device: /home/user/path/to/triplea-game/dice-server/src
+    #  o: bind
