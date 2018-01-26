@@ -14,13 +14,13 @@ RUN apt-get -y update \
   && docker-php-ext-install mcrypt mysqli
 
 COPY ["./build/docker/marti-dev/app-files/root", "/"]
-COPY ["./src", "/usr/share/nginx/html/dice"]
 
 RUN groupadd ssmtp \
   && chown :ssmtp /etc/ssmtp/ssmtp.conf \
   && chown :ssmtp /usr/sbin/ssmtp \
   && chmod 640 /etc/ssmtp/ssmtp.conf \
   && chmod g+s /usr/sbin/ssmtp \
-  && chown -R www-data:www-data /usr/share/nginx/html
+  && mkdir -p /usr/share/nginx/html/dice \
+  && chown www-data:www-data /usr/share/nginx/html/dice
 
 ENTRYPOINT ["marti-app-entrypoint"]

@@ -1,0 +1,8 @@
+#
+# Dockerfile for building the MARTI source container.
+#
+
+FROM busybox:1.28.0
+MAINTAINER "tripleabuilderbot@gmail.com"
+
+COPY ["./src", "/marti-src"]
