@@ -1,15 +1,6 @@
 version: '3.1'
 
 services:
-  web:
-    build:
-      context: ../../..
-      dockerfile: build/docker/marti-dev/web.df
-    ports:
-      - '4000:80'
-    depends_on:
-      - app
-
   app:
     build:
       context: ../../..
@@ -21,8 +12,31 @@ services:
       - MARTI_SMTP_PORT=${MARTI_SMTP_PORT}
       - MARTI_SMTP_USERNAME=${MARTI_SMTP_USERNAME}
       - MARTI_SMTP_PASSWORD=${MARTI_SMTP_PASSWORD}
+    volumes:
+      - src-volume:/usr/share/nginx/html/dice
 
   sql:
     build:
       context: ../../..
       dockerfile: build/docker/marti-dev/sql.df
+
+  src:
+    build:
+      context: ../../..
+      dockerfile: build/docker/marti-dev/src.df
+    volumes:
+      - src-volume:/marti-src
+
+  web:
+    build:
+      context: ../../..
+      dockerfile: build/docker/marti-dev/web.df
+    depends_on:
+      - app
+    ports:
+      - '4000:80'
+    volumes:
+      - src-volume:/usr/share/nginx/html/dice
+
+volumes:
+  src-volume:

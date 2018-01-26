@@ -17,4 +17,3 @@ RUN printf "fastcgi_param MARTI_DB_HOST $MARTI_DB_HOST;\n" >> /etc/nginx/marti_f
   && printf "fastcgi_param MARTI_DB_NAME $MARTI_DB_NAME;" >> /etc/nginx/marti_fastcgi_params
 
 COPY ["./build/docker/marti-dev/web-files/root", "/"]
-COPY ["./src", "/usr/share/nginx/html/dice"]
