@@ -1,0 +1,21 @@
+server {
+  listen 80;
+  listen [::]:80;
+  server_name dice.marti.triplea-game.org;
+  root /usr/share/nginx/html/dice.tripleawarclub.org/public_html;
+
+  access_log /var/log/nginx/dice.tripleawarclub.org-access.log;
+  error_log /var/log/nginx/dice.tripleawarclub.org-error.log;
+
+  index register.php;
+
+  location ~ \.php$ {
+    include snippets/fastcgi-php.conf;
+    include marti_prod_fastcgi_params;
+    fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+  }
+
+  location ~ \.(key|dat)$ {
+    deny all;
+  }
+}
