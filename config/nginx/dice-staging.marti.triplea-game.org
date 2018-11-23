@@ -2,7 +2,27 @@ server {
   listen 80;
   listen [::]:80;
   server_name dice-staging.marti.triplea-game.org;
+  return 301 https://dice-staging.marti.triplea-game.org$request_uri;
+}
+
+server {
+  listen 443 ssl http2;
+  listen [::]:443 ssl http2;
+  server_name dice-staging.marti.triplea-game.org;
   root /usr/share/nginx/html/dice-staging.tripleawarclub.org/public_html;
+
+  ssl_certificate /etc/letsencrypt/live/dice.marti.triplea-game.org/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/dice.marti.triplea-game.org/privkey.pem;
+
+  # Turn on OCSP stapling as recommended at
+  # https://community.letsencrypt.org/t/integration-guide/13123
+  # requires nginx version >= 1.3.7
+  ssl_stapling on;
+  ssl_stapling_verify on;
+  add_header Strict-Transport-Security "max-age=31536000";
+  ssl_ciphers 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
+  ssl_prefer_server_ciphers on;
+  ssl_dhparam /etc/dhparam/dhparams.pem;
 
   access_log /var/log/nginx/dice-staging.tripleawarclub.org-access.log;
   error_log /var/log/nginx/dice-staging.tripleawarclub.org-error.log;
