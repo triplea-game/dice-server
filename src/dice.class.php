@@ -3,6 +3,8 @@ class dice {
 	// NB: "fatal error:" prefix and "!" suffix on error messages in this
 	// module are required by the TripleA parser
 
+	const senderEmail = "marti@triplea-game.org";
+
 	var $domain;
 	var $dbconn = null;
 	var $enc = [];
@@ -160,7 +162,7 @@ class dice {
 		$message .= "This Email is not SPAM.\nYou receive this email because of your registration at {$this->domain}\n";
 		$message .= "To unsubscribe from this service go to {$this->domain}/unsubscribe.php";
 
-		$ehead = "From: MARTI<marti@triplea-game.org>";
+		$ehead = "From: MARTI<{${self::senderEmail}}";
 		$subj = "$subject";
 
 		$mailsend = @mail($to, $subj, $message, $ehead);

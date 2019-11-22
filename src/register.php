@@ -43,7 +43,7 @@
 			// sending email
 			$email_enc = urlencode($email);
 			$subj = "Registration for MARTI dice server";
-			$ehead= "From: MARTI<marti@triplea-game.org>\n";
+			$ehead= "From: MARTI<{${dice::senderEmail}}>\n";
 			$ehead .= "List-Unsubscribe:<$dice->domain/unsubscribe.php?email=$email_enc>\n";
 			$message = "To validate your email click this link: $dice->domain/validate.php?email=$email_enc&val=" . urlencode($validation);
 			$message .= "\n\nTo unsubscribe from this service go to $dice->domain/unsubscribe.php?email=$email_enc";
