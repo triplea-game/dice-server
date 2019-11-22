@@ -41,15 +41,13 @@
 			$sth->close();
 
 			// sending email
-			$to = $email;
 			$email_enc = urlencode($email);
 			$subj = "Registration for MARTI dice server";
-			$from = "marti@tripleawarclub.org";
-			$ehead= "From: MARTI<$from>\n";
+			$ehead= "From: MARTI<{${dice::senderEmail}}>\n";
 			$ehead .= "List-Unsubscribe:<$dice->domain/unsubscribe.php?email=$email_enc>\n";
 			$message = "To validate your email click this link: $dice->domain/validate.php?email=$email_enc&val=" . urlencode($validation);
 			$message .= "\n\nTo unsubscribe from this service go to $dice->domain/unsubscribe.php?email=$email_enc";
-			$mailsend= @mail($to, $subj, $message, $ehead, "-f $from -r no-reply@tripleawarclub.org");
+			$mailsend= @mail($email, $subj, $message, $ehead);
 
 			if ($mailsend) {
 				echo("<p>You should receive an email with a validation link soon.</p>After validating your email you can use the MARTI dice server.");
