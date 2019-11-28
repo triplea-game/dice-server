@@ -162,7 +162,8 @@ class dice {
 		$message .= "This Email is not SPAM.\nYou receive this email because of your registration at {$this->domain}\n";
 		$message .= "To unsubscribe from this service go to {$this->domain}/unsubscribe.php";
 
-		$ehead = "From: MARTI<{${self::senderEmail}}";
+		$from_mail = self::senderEmail;
+		$ehead = "From: MARTI<$from_mail>";
 		$subj = "$subject";
 
 		$mailsend = @mail($to, $subj, $message, $ehead);
